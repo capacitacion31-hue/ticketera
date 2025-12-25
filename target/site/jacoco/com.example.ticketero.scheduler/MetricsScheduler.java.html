@@ -25,7 +25,7 @@ public class MetricsScheduler {
 <span class="fc" id="L25">            logAdvisorMetrics();</span>
 <span class="fc" id="L26">        } catch (Exception e) {</span>
 <span class="fc" id="L27">            log.error(&quot;Error logging system metrics&quot;, e);</span>
-        }
+<span class="fc" id="L28">        }</span>
 <span class="fc" id="L29">    }</span>
 
     @Scheduled(cron = &quot;0 */15 * * * ?&quot;) // Cada 15 minutos
@@ -46,7 +46,7 @@ public class MetricsScheduler {
             }
 <span class="fc" id="L47">        } catch (Exception e) {</span>
 <span class="fc" id="L48">            log.error(&quot;Error logging detailed metrics&quot;, e);</span>
-        }
+<span class="fc" id="L49">        }</span>
 <span class="fc" id="L50">    }</span>
 
     private void logQueueMetrics() {

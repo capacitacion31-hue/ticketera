@@ -53,10 +53,10 @@ import java.util.List;
 
     @ExceptionHandler(Exception.class)
     public ResponseEntity&lt;ErrorResponse&gt; handleGeneral(Exception ex) {
-<span class="nc" id="L56">        log.error(&quot;Unexpected error&quot;, ex);</span>
-<span class="nc" id="L57">        return ResponseEntity</span>
-<span class="nc" id="L58">            .status(500)</span>
-<span class="nc" id="L59">            .body(new ErrorResponse(&quot;Internal server error&quot;, 500));</span>
+<span class="fc" id="L56">        log.error(&quot;Unexpected error&quot;, ex);</span>
+<span class="fc" id="L57">        return ResponseEntity</span>
+<span class="fc" id="L58">            .status(500)</span>
+<span class="fc" id="L59">            .body(new ErrorResponse(&quot;Internal server error&quot;, 500));</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

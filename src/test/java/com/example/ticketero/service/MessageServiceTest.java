@@ -253,20 +253,17 @@ class MessageServiceTest {
         }
 
         @Test
-        @DisplayName("debe incrementar intentos y guardar mensaje")
-        void sendMessage_debeIncrementarIntentosYGuardar() {
+        @DisplayName("debe construir texto correcto para PROXIMO_TURNO")
+        void sendMessage_debeContruirTextoProximoTurno() {
             // Given
             Ticket ticket = ticketWaiting()
                 .telefono("+56912345678")
-                .numero("C01")
-                .positionInQueue(1)
-                .estimatedWaitMinutes(5)
+                .numero("C07")
                 .build();
 
             Mensaje mensaje = Mensaje.builder()
-                .id(1L)
                 .ticket(ticket)
-                .plantilla(MessageTemplate.TOTEM_TICKET_CREADO)
+                .plantilla(MessageTemplate.TOTEM_PROXIMO_TURNO)
                 .estadoEnvio(EstadoEnvio.PENDIENTE)
                 .intentos(0)
                 .build();
@@ -275,20 +272,19 @@ class MessageServiceTest {
             messageService.sendMessage(mensaje);
 
             // Then
-            assertThat(mensaje.getIntentos()).isEqualTo(1);
-            verify(mensajeRepository).save(mensaje);
+            assertThat(mensaje.getEstadoEnvio()).isEqualTo(EstadoEnvio.ENVIADO);
+            assertThat(mensaje.getTelegramMessageId()).contains("msg_");
         }
 
         @Test
-        @DisplayName("debe construir texto correcto para ES_TU_TURNO")
-        void sendMessage_debeContruirTextoEsTuTurno() {
+        @DisplayName("debe construir texto correcto para ES_TU_TURNO sin advisor")
+        void sendMessage_esTuTurnoSinAdvisor_debeUsarNA() {
             // Given
-            Advisor advisor = advisorAvailable().name("María López").build();
             Ticket ticket = ticketInProgress()
                 .telefono("+56912345678")
                 .numero("C10")
                 .assignedModuleNumber(3)
-                .assignedAdvisor(advisor)
+                .assignedAdvisor(null)
                 .build();
 
             Mensaje mensaje = Mensaje.builder()
@@ -301,35 +297,50 @@ class MessageServiceTest {
             // When
             messageService.sendMessage(mensaje);
 
-            // Then - Verificar que se procesó exitosamente
+            // Then
             assertThat(mensaje.getEstadoEnvio()).isEqualTo(EstadoEnvio.ENVIADO);
             assertThat(mensaje.getTelegramMessageId()).contains("msg_");
         }
+    }
+
+    @Nested
+    @DisplayName("processRetryMessages()")
+    class ProcesarMensajesReintento {
 
         @Test
-        @DisplayName("debe construir texto correcto para TICKET_CREADO")
-        void sendMessage_debeContruirTextoTicketCreado() {
+        @DisplayName("con mensajes para reintentar → debe procesarlos")
+        void processRetryMessages_conMensajes_debeProcesar() {
             // Given
-            Ticket ticket = ticketWaiting()
-                .telefono("+56912345678")
-                .numero("C05")
-                .positionInQueue(3)
-                .estimatedWaitMinutes(15)
-                .build();
-
             Mensaje mensaje = Mensaje.builder()
-                .ticket(ticket)
+                .id(1L)
+                .ticket(ticketWaiting().telefono("+56912345678").build())
                 .plantilla(MessageTemplate.TOTEM_TICKET_CREADO)
                 .estadoEnvio(EstadoEnvio.PENDIENTE)
-                .intentos(0)
+                .intentos(1)
                 .build();
 
-            // When
-            messageService.sendMessage(mensaje);
+            when(mensajeRepository.findRetryableMessages(any())).thenReturn(List.of(mensaje));
 
-            // Then - Verificar que se procesó exitosamente (indirectamente)
-            assertThat(mensaje.getEstadoEnvio()).isEqualTo(EstadoEnvio.ENVIADO);
-            assertThat(mensaje.getTelegramMessageId()).contains("msg_");
+            // When
+            messageService.processRetryMessages();
+
+            // Then
+            verify(mensajeRepository).findRetryableMessages(any(LocalDateTime.class));
+            assertThat(mensaje.getIntentos()).isEqualTo(2);
+        }
+
+        @Test
+        @DisplayName("sin mensajes para reintentar → no debe hacer nada")
+        void processRetryMessages_sinMensajes_noDebeHacerNada() {
+            // Given
+            when(mensajeRepository.findRetryableMessages(any())).thenReturn(Collections.emptyList());
+
+            // When
+            messageService.processRetryMessages();
+
+            // Then
+            verify(mensajeRepository).findRetryableMessages(any());
+            verify(mensajeRepository, never()).save(any());
         }
     }
 }

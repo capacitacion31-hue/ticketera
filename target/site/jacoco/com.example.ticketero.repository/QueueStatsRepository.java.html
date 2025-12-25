@@ -109,7 +109,7 @@ public interface QueueStatsRepository extends JpaRepository&lt;Ticket, Long&gt; 
     }
 
     default long countTodayByQueueAndStatus(QueueType queueType, TicketStatus status) {
-<span class="nc" id="L112">        return countTodayByQueueAndStatus(queueType, status, LocalDate.now());</span>
+<span class="fc" id="L112">        return countTodayByQueueAndStatus(queueType, status, LocalDate.now());</span>
     }
 
     default Double getAverageServiceTimeToday(QueueType queueType) {

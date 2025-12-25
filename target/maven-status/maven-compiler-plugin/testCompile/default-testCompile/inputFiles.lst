@@ -5,6 +5,7 @@ c:\Users\susan\OneDrive\Documentos\ticketera\src\test\java\com\example\ticketero
 c:\Users\susan\OneDrive\Documentos\ticketera\src\test\java\com\example\ticketero\model\dto\response\TicketByRutResponseTest.java
 c:\Users\susan\OneDrive\Documentos\ticketera\src\test\java\com\example\ticketero\scheduler\MetricsSchedulerTest.java
 c:\Users\susan\OneDrive\Documentos\ticketera\src\test\java\com\example\ticketero\model\dto\response\AuditEventResponseTest.java
+c:\Users\susan\OneDrive\Documentos\ticketera\src\test\java\com\example\ticketero\config\SchedulingConfigTest.java
 c:\Users\susan\OneDrive\Documentos\ticketera\src\test\java\com\example\ticketero\model\entity\AdvisorTest.java
 c:\Users\susan\OneDrive\Documentos\ticketera\src\test\java\com\example\ticketero\repository\QueueStatsRepositoryTest.java
 c:\Users\susan\OneDrive\Documentos\ticketera\src\test\java\com\example\ticketero\model\enums\MessageTemplateTest.java
@@ -19,6 +20,7 @@ c:\Users\susan\OneDrive\Documentos\ticketera\src\test\java\com\example\ticketero
 c:\Users\susan\OneDrive\Documentos\ticketera\src\test\java\com\example\ticketero\model\entity\MensajeTest.java
 c:\Users\susan\OneDrive\Documentos\ticketera\src\test\java\com\example\ticketero\scheduler\QueueMaintenanceSchedulerTest.java
 c:\Users\susan\OneDrive\Documentos\ticketera\src\test\java\com\example\ticketero\service\MessageServiceTest.java
+c:\Users\susan\OneDrive\Documentos\ticketera\src\test\java\com\example\ticketero\exception\GlobalExceptionHandlerTest.java
 c:\Users\susan\OneDrive\Documentos\ticketera\src\test\java\com\example\ticketero\service\AdvisorServiceTest.java
 c:\Users\susan\OneDrive\Documentos\ticketera\src\test\java\com\example\ticketero\model\dto\response\AdvisorResponseTest.java
 c:\Users\susan\OneDrive\Documentos\ticketera\src\test\java\com\example\ticketero\service\DashboardServiceTest.java

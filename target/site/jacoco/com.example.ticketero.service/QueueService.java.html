@@ -50,7 +50,7 @@ public class QueueService {
 <span class="fc" id="L50">        String status = determineQueueStatus(waiting, criticalCount);</span>
 
 <span class="fc" id="L52">        return new QueueSummaryResponse(</span>
-<span class="fc" id="L53">            queueType,</span>
+            queueType,
 <span class="fc" id="L54">            queueType.getDisplayName(),</span>
 <span class="fc" id="L55">            queueType.getAverageTimeMinutes(),</span>
 <span class="fc" id="L56">            queueType.getPriority(),</span>
@@ -61,7 +61,7 @@ public class QueueService {
 <span class="fc" id="L61">            (int) completedToday,</span>
 <span class="fc" id="L62">            avgWaitTimeToday,</span>
 <span class="fc" id="L63">            (int) criticalCount,</span>
-<span class="fc" id="L64">            status</span>
+            status
         );
     }
 
@@ -84,12 +84,12 @@ public class QueueService {
 <span class="fc" id="L84">        double efficiency = calculateEfficiency(avgServiceTime, queueType.getAverageTimeMinutes());</span>
 
 <span class="fc" id="L86">        Map&lt;String, String&gt; trends = Map.of(</span>
-<span class="fc" id="L87">            &quot;waitTimeVsPrevious&quot;, &quot;+5%&quot;,  // Placeholder - implementar cálculo real</span>
-<span class="fc" id="L88">            &quot;serviceTimeVsPrevious&quot;, &quot;-2%&quot;</span>
+            &quot;waitTimeVsPrevious&quot;, &quot;+5%&quot;,  // Placeholder - implementar cálculo real
+            &quot;serviceTimeVsPrevious&quot;, &quot;-2%&quot;
         );
 
 <span class="fc" id="L91">        return new QueueStatsResponse(</span>
-<span class="fc" id="L92">            queueType,</span>
+            queueType,
 <span class="fc" id="L93">            LocalDate.now(),</span>
 <span class="fc" id="L94">            (int) completed,</span>
 <span class="fc" id="L95">            (int) waiting,</span>
@@ -97,9 +97,9 @@ public class QueueService {
 <span class="fc bfc" id="L97" title="All 2 branches covered.">            avgServiceTime != null ? avgServiceTime.intValue() : queueType.getAverageTimeMinutes(),</span>
 <span class="fc bfc" id="L98" title="All 2 branches covered.">            avgWaitTime != null ? avgWaitTime.intValue() : 0,</span>
 <span class="fc" id="L99">            (int) criticalCount,</span>
-<span class="fc" id="L100">            &quot;10:00-11:00&quot;, // Placeholder - implementar cálculo de hora pico</span>
+            &quot;10:00-11:00&quot;, // Placeholder - implementar cálculo de hora pico
 <span class="fc" id="L101">            efficiency,</span>
-<span class="fc" id="L102">            trends</span>
+            trends
         );
     }
 

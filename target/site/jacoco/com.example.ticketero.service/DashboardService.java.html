@@ -43,9 +43,9 @@ public class DashboardService {
 
 <span class="fc" id="L44">        return new DashboardResponse(</span>
 <span class="fc" id="L45">            LocalDateTime.now(),</span>
-<span class="fc" id="L46">            summary,</span>
-<span class="fc" id="L47">            queuesSummary,</span>
-<span class="fc" id="L48">            alerts</span>
+            summary,
+            queuesSummary,
+            alerts
         );
     }
 
@@ -72,33 +72,33 @@ public class DashboardService {
 <span class="fc" id="L72">            .orElse(0.0);</span>
 
 <span class="fc" id="L74">        PerformanceSummaryResponse.PerformanceMetrics performance = </span>
-<span class="fc" id="L75">            new PerformanceSummaryResponse.PerformanceMetrics(</span>
+            new PerformanceSummaryResponse.PerformanceMetrics(
 <span class="fc" id="L76">                avgServiceTime.intValue(),</span>
-<span class="fc" id="L77">                avgServiceTime,</span>
+                avgServiceTime,
 <span class="fc" id="L78">                avgWaitTime.intValue(),</span>
 <span class="fc" id="L79">                87.5, // Efficiency placeholder</span>
 <span class="fc" id="L80">                4.2,  // Customer satisfaction placeholder</span>
-<span class="fc" id="L81">                &quot;10:00-11:00&quot;, // Peak hours placeholder</span>
+                &quot;10:00-11:00&quot;, // Peak hours placeholder
 <span class="fc" id="L82">                (int) totalCompleted,</span>
 <span class="fc" id="L83">                93.3  // Service time accuracy placeholder</span>
             );
 
 <span class="fc" id="L86">        Map&lt;String, String&gt; trends = Map.of(</span>
-<span class="fc" id="L87">            &quot;serviceTimeVsYesterday&quot;, &quot;-5%&quot;,</span>
-<span class="fc" id="L88">            &quot;waitTimeVsYesterday&quot;, &quot;+8%&quot;,</span>
-<span class="fc" id="L89">            &quot;efficiencyVsYesterday&quot;, &quot;+2%&quot;</span>
+            &quot;serviceTimeVsYesterday&quot;, &quot;-5%&quot;,
+            &quot;waitTimeVsYesterday&quot;, &quot;+8%&quot;,
+            &quot;efficiencyVsYesterday&quot;, &quot;+2%&quot;
         );
 
 <span class="fc" id="L92">        List&lt;String&gt; recommendations = List.of(</span>
-<span class="fc" id="L93">            &quot;Considerar asignar más asesores en horario 10-11&quot;,</span>
-<span class="fc" id="L94">            &quot;Revisar proceso de cola CAJA por alta carga&quot;</span>
+            &quot;Considerar asignar más asesores en horario 10-11&quot;,
+            &quot;Revisar proceso de cola CAJA por alta carga&quot;
         );
 
 <span class="fc" id="L97">        return new PerformanceSummaryResponse(</span>
 <span class="fc" id="L98">            LocalDate.now(),</span>
-<span class="fc" id="L99">            performance,</span>
-<span class="fc" id="L100">            trends,</span>
-<span class="fc" id="L101">            recommendations</span>
+            performance,
+            trends,
+            recommendations
         );
     }
 
@@ -138,7 +138,7 @@ public class DashboardService {
 <span class="fc" id="L138">            criticalTickets.size(),</span>
 <span class="fc" id="L139">            (int) activeAdvisors,</span>
 <span class="fc" id="L140">            22, // Average wait time placeholder</span>
-<span class="fc" id="L141">            &quot;OPERATIONAL&quot;</span>
+            &quot;OPERATIONAL&quot;
         );
     }
 
@@ -146,26 +146,26 @@ public class DashboardService {
 <span class="fc" id="L146">        List&lt;DashboardResponse.AlertResponse&gt; alerts = queues.stream()</span>
 <span class="fc bfc" id="L147" title="All 2 branches covered.">            .filter(q -&gt; q.criticalTickets() &gt; 0)</span>
 <span class="fc" id="L148">            .map(q -&gt; new DashboardResponse.AlertResponse(</span>
-<span class="fc" id="L149">                &quot;TICKETS_CRITICOS&quot;,</span>
-<span class="fc" id="L150">                &quot;HIGH&quot;,</span>
+                &quot;TICKETS_CRITICOS&quot;,
+                &quot;HIGH&quot;,
 <span class="fc" id="L151">                q.criticalTickets() + &quot; tickets han excedido tiempo límite en cola &quot; + q.queueType().getDisplayName(),</span>
 <span class="fc" id="L152">                q.criticalTickets(),</span>
 <span class="fc" id="L153">                &quot;Asignar asesores adicionales a cola &quot; + q.queueType().getDisplayName(),</span>
 <span class="fc" id="L154">                LocalDateTime.now()</span>
-<span class="fc" id="L155">            ))</span>
+            ))
 <span class="fc" id="L156">            .toList();</span>
 
         // Agregar alerta de cola sobrecargada
 <span class="fc" id="L159">        queues.stream()</span>
 <span class="fc" id="L160">            .filter(q -&gt; &quot;HIGH_LOAD&quot;.equals(q.status()))</span>
 <span class="pc" id="L161">            .forEach(q -&gt; alerts.add(new DashboardResponse.AlertResponse(</span>
-<span class="nc" id="L162">                &quot;COLA_SOBRECARGADA&quot;,</span>
-<span class="nc" id="L163">                &quot;MEDIUM&quot;,</span>
+                &quot;COLA_SOBRECARGADA&quot;,
+                &quot;MEDIUM&quot;,
 <span class="nc" id="L164">                &quot;Cola &quot; + q.queueType().getDisplayName() + &quot; con alta carga (&quot; + q.ticketsWaiting() + &quot; tickets esperando)&quot;,</span>
 <span class="nc" id="L165">                q.ticketsWaiting(),</span>
 <span class="nc" id="L166">                &quot;Reasignar asesores a cola &quot; + q.queueType().getDisplayName(),</span>
 <span class="nc" id="L167">                LocalDateTime.now()</span>
-<span class="nc" id="L168">            )));</span>
+            )));
 
 <span class="fc" id="L170">        return alerts;</span>
     }

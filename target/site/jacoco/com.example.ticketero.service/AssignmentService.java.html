@@ -58,7 +58,7 @@ public class AssignmentService {
 <span class="fc" id="L58">        LocalDateTime gerenciaLimit = now.minusMinutes(QueueType.GERENCIA.getMaxWaitTimeMinutes());</span>
         
 <span class="fc" id="L60">        List&lt;Ticket&gt; criticalTickets = queueStatsRepository.findCriticalTicketsByTimeLimit(</span>
-<span class="fc" id="L61">            cajaLimit, personalLimit, empresasLimit, gerenciaLimit</span>
+            cajaLimit, personalLimit, empresasLimit, gerenciaLimit
         );
 
 <span class="fc bfc" id="L64" title="All 2 branches covered.">        for (Ticket ticket : criticalTickets) {</span>
@@ -70,16 +70,16 @@ public class AssignmentService {
 <span class="fc" id="L70">                    ticket.getNumero(), advisor.get().getName(),</span>
 <span class="fc" id="L71">                    java.time.Duration.between(ticket.getCreatedAt(), now).toMinutes());</span>
             }
-        }
+<span class="fc" id="L73">        }</span>
 <span class="fc" id="L74">    }</span>
 
     private void processNormalTickets(List&lt;Advisor&gt; availableAdvisors) {
         // RN-002: Procesar por prioridad de cola (GERENCIA &gt; EMPRESAS &gt; PERSONAL_BANKER &gt; CAJA)
 <span class="fc" id="L78">        QueueType[] queuesByPriority = {</span>
-<span class="fc" id="L79">            QueueType.GERENCIA, </span>
-<span class="fc" id="L80">            QueueType.EMPRESAS, </span>
-<span class="fc" id="L81">            QueueType.PERSONAL_BANKER, </span>
-<span class="fc" id="L82">            QueueType.CAJA</span>
+            QueueType.GERENCIA, 
+            QueueType.EMPRESAS, 
+            QueueType.PERSONAL_BANKER, 
+            QueueType.CAJA
         };
 
 <span class="fc bfc" id="L85" title="All 2 branches covered.">        for (QueueType queueType : queuesByPriority) {</span>
@@ -98,7 +98,7 @@ public class AssignmentService {
 <span class="fc" id="L98">                    log.info(&quot;Ticket {} assigned to {} (queue: {})&quot;, </span>
 <span class="fc" id="L99">                        ticket.getNumero(), advisor.get().getName(), queueType);</span>
                 }
-            }
+<span class="fc" id="L101">            }</span>
         }
 <span class="fc" id="L103">    }</span>
 
@@ -220,7 +220,7 @@ public class AssignmentService {
 <span class="fc" id="L220">        int totalServed = advisor.getTotalTicketsServedToday();</span>
 <span class="pc bpc" id="L221" title="1 of 2 branches missed.">        if (totalServed == 1) {</span>
 <span class="nc" id="L222">            advisor.setAverageServiceTimeMinutes(java.math.BigDecimal.valueOf(actualServiceTime));</span>
-<span class="nc" id="L223">        } else {</span>
+        } else {
 <span class="fc" id="L224">            double currentAvg = advisor.getAverageServiceTimeMinutes().doubleValue();</span>
 <span class="fc" id="L225">            double newAvg = ((currentAvg * (totalServed - 1)) + actualServiceTime) / totalServed;</span>
 <span class="fc" id="L226">            advisor.setAverageServiceTimeMinutes(java.math.BigDecimal.valueOf(newAvg));</span>

@@ -92,12 +92,12 @@ public class MessageService {
     @Scheduled(fixedDelay = 30000) // Cada 30 segundos
     @Transactional
     public void processRetryMessages() {
-<span class="nc" id="L95">        List&lt;Mensaje&gt; retryMessages = mensajeRepository.findRetryableMessages(LocalDateTime.now());</span>
+<span class="fc" id="L95">        List&lt;Mensaje&gt; retryMessages = mensajeRepository.findRetryableMessages(LocalDateTime.now());</span>
         
-<span class="nc bnc" id="L97" title="All 2 branches missed.">        for (Mensaje mensaje : retryMessages) {</span>
-<span class="nc" id="L98">            sendMessage(mensaje);</span>
-<span class="nc" id="L99">        }</span>
-<span class="nc" id="L100">    }</span>
+<span class="fc bfc" id="L97" title="All 2 branches covered.">        for (Mensaje mensaje : retryMessages) {</span>
+<span class="fc" id="L98">            sendMessage(mensaje);</span>
+<span class="fc" id="L99">        }</span>
+<span class="fc" id="L100">    }</span>
 
     @Async
     @Transactional
@@ -139,7 +139,7 @@ public class MessageService {
     private String buildMessageText(Mensaje mensaje) {
 <span class="fc" id="L140">        Ticket ticket = mensaje.getTicket();</span>
         
-<span class="pc bpc" id="L142" title="1 of 3 branches missed.">        return switch (mensaje.getPlantilla()) {</span>
+<span class="fc bfc" id="L142" title="All 3 branches covered.">        return switch (mensaje.getPlantilla()) {</span>
 <span class="fc" id="L143">            case TOTEM_TICKET_CREADO -&gt; String.format(&quot;&quot;&quot;</span>
                 ✅ &lt;b&gt;Ticket Creado&lt;/b&gt;
                 Tu número de turno: &lt;b&gt;%s&lt;/b&gt;
@@ -148,12 +148,12 @@ public class MessageService {
                 Te notificaremos cuando estés próximo.
 <span class="fc" id="L149">                &quot;&quot;&quot;, ticket.getNumero(), ticket.getPositionInQueue(), ticket.getEstimatedWaitMinutes());</span>
                 
-<span class="nc" id="L151">            case TOTEM_PROXIMO_TURNO -&gt; String.format(&quot;&quot;&quot;</span>
+<span class="fc" id="L151">            case TOTEM_PROXIMO_TURNO -&gt; String.format(&quot;&quot;&quot;</span>
                 ⏰ &lt;b&gt;¡Pronto será tu turno!&lt;/b&gt;
                 Turno: &lt;b&gt;%s&lt;/b&gt;
                 Faltan aproximadamente 3 turnos.
                 Por favor, acércate a la sucursal.
-<span class="nc" id="L156">                &quot;&quot;&quot;, ticket.getNumero());</span>
+<span class="fc" id="L156">                &quot;&quot;&quot;, ticket.getNumero());</span>
                 
 <span class="fc" id="L158">            case TOTEM_ES_TU_TURNO -&gt; String.format(&quot;&quot;&quot;</span>
                 🔔 &lt;b&gt;¡ES TU TURNO %s!&lt;/b&gt;
