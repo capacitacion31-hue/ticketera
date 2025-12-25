@@ -1,0 +1,207 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>TicketService.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Ticketero API</a> &gt; <a href="index.source.html" class="el_package">com.example.ticketero.service</a> &gt; <span class="el_source">TicketService.java</span></div><h1>TicketService.java</h1><pre class="source lang-java linenums">package com.example.ticketero.service;
+
+import com.example.ticketero.exception.ActiveTicketExistsException;
+import com.example.ticketero.exception.TicketNotFoundException;
+import com.example.ticketero.model.dto.request.TicketRequest;
+import com.example.ticketero.model.dto.response.TicketPositionResponse;
+import com.example.ticketero.model.dto.response.TicketResponse;
+import com.example.ticketero.model.dto.response.TicketByRutResponse;
+import com.example.ticketero.model.entity.Ticket;
+import com.example.ticketero.model.enums.QueueType;
+import com.example.ticketero.model.enums.TicketStatus;
+import com.example.ticketero.repository.TicketRepository;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.List;
+import java.util.Optional;
+import java.util.UUID;
+
+@Service
+@RequiredArgsConstructor
+<span class="fc" id="L25">@Slf4j</span>
+@Transactional(readOnly = true)
+public class TicketService {
+
+    private final TicketRepository ticketRepository;
+    private final QueueService queueService;
+    private final AuditService auditService;
+    private final MessageService messageService;
+
+    @Transactional
+    public TicketResponse create(TicketRequest request) {
+        // RN-001: Validar ticket activo existente
+<span class="fc" id="L37">        validateNoActiveTicket(request.nationalId());</span>
+
+        // Generar número de ticket
+<span class="fc" id="L40">        String numero = generateTicketNumber(request.queueType());</span>
+        
+        // Calcular posición en cola
+<span class="fc" id="L43">        int position = calculatePosition(request.queueType());</span>
+<span class="fc" id="L44">        int estimatedWait = position * request.queueType().getAverageTimeMinutes();</span>
+
+<span class="fc" id="L46">        Ticket ticket = Ticket.builder()</span>
+<span class="fc" id="L47">            .codigoReferencia(UUID.randomUUID())</span>
+<span class="fc" id="L48">            .numero(numero)</span>
+<span class="fc" id="L49">            .nationalId(request.nationalId())</span>
+<span class="fc" id="L50">            .telefono(request.telefono())</span>
+<span class="fc" id="L51">            .branchOffice(request.branchOffice())</span>
+<span class="fc" id="L52">            .queueType(request.queueType())</span>
+<span class="fc" id="L53">            .status(TicketStatus.EN_ESPERA)</span>
+<span class="fc" id="L54">            .positionInQueue(position)</span>
+<span class="fc" id="L55">            .estimatedWaitMinutes(estimatedWait)</span>
+<span class="fc" id="L56">            .build();</span>
+
+<span class="fc" id="L58">        Ticket saved = ticketRepository.save(ticket);</span>
+        
+        // Auditoría
+<span class="fc" id="L61">        auditService.logTicketCreated(saved, request.nationalId());</span>
+        
+        // Programar mensaje de confirmación
+<span class="fc" id="L64">        messageService.scheduleTicketCreatedMessage(saved);</span>
+        
+<span class="fc" id="L66">        log.info(&quot;Ticket created: {} for customer: {}&quot;, saved.getNumero(), request.nationalId());</span>
+<span class="fc" id="L67">        return toResponse(saved);</span>
+    }
+
+    public Optional&lt;TicketResponse&gt; findByCodigoReferencia(UUID codigoReferencia) {
+<span class="fc" id="L71">        return ticketRepository.findByCodigoReferencia(codigoReferencia)</span>
+<span class="fc" id="L72">            .map(this::toResponse);</span>
+    }
+
+    public TicketPositionResponse getPosition(String numero) {
+<span class="nc" id="L76">        Ticket ticket = ticketRepository.findByNumero(numero)</span>
+<span class="nc" id="L77">            .orElseThrow(() -&gt; new TicketNotFoundException(numero));</span>
+        
+        // Recalcular posición en tiempo real
+<span class="nc" id="L80">        updatePosition(ticket);</span>
+        
+<span class="nc" id="L82">        return toPositionResponse(ticket);</span>
+    }
+
+    public TicketByRutResponse findByRut(String nationalId) {
+<span class="nc" id="L86">        List&lt;TicketStatus&gt; activeStatuses = List.of(</span>
+            TicketStatus.EN_ESPERA, 
+            TicketStatus.PROXIMO, 
+            TicketStatus.ATENDIENDO
+        );
+        
+<span class="nc" id="L92">        List&lt;Ticket&gt; activeTickets = ticketRepository.findByNationalIdAndStatusIn(nationalId, activeStatuses);</span>
+        
+<span class="nc bnc" id="L94" title="All 2 branches missed.">        if (activeTickets.isEmpty()) {</span>
+<span class="nc" id="L95">            return new TicketByRutResponse(</span>
+                nationalId,
+                null,
+                &quot;No tienes tickets activos. Puedes crear uno nuevo en el terminal.&quot;,
+                null
+            );
+        }
+        
+<span class="nc" id="L103">        Ticket activeTicket = activeTickets.get(0);</span>
+<span class="nc" id="L104">        updatePosition(activeTicket);</span>
+        
+<span class="nc" id="L106">        return new TicketByRutResponse(</span>
+            nationalId,
+<span class="nc" id="L108">            toActiveTicketInfo(activeTicket),</span>
+<span class="nc" id="L109">            &quot;Tu ticket &quot; + activeTicket.getNumero() + &quot; está en posición &quot; + activeTicket.getPositionInQueue(),</span>
+            null
+        );
+    }
+
+    private void validateNoActiveTicket(String nationalId) {
+<span class="fc" id="L115">        List&lt;TicketStatus&gt; activeStatuses = List.of(</span>
+            TicketStatus.EN_ESPERA, 
+            TicketStatus.PROXIMO, 
+            TicketStatus.ATENDIENDO
+        );
+        
+<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (ticketRepository.existsByNationalIdAndStatusIn(nationalId, activeStatuses)) {</span>
+<span class="fc" id="L122">            List&lt;Ticket&gt; activeTickets = ticketRepository.findByNationalIdAndStatusIn(nationalId, activeStatuses);</span>
+<span class="fc" id="L123">            String activeTicketNumber = activeTickets.get(0).getNumero();</span>
+<span class="fc" id="L124">            throw new ActiveTicketExistsException(nationalId, activeTicketNumber);</span>
+        }
+<span class="fc" id="L126">    }</span>
+
+    private String generateTicketNumber(QueueType queueType) {
+        // Contar TODOS los tickets de hoy para esta cola (no solo EN_ESPERA)
+<span class="fc" id="L130">        LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();</span>
+<span class="fc" id="L131">        long count = ticketRepository.findAll()</span>
+<span class="fc" id="L132">            .stream()</span>
+<span class="pc bnc" id="L133" title="All 2 branches missed.">            .filter(t -&gt; t.getQueueType() == queueType)</span>
+<span class="pc" id="L134">            .filter(t -&gt; t.getCreatedAt().isAfter(startOfDay))</span>
+<span class="fc" id="L135">            .count() + 1;</span>
+<span class="fc" id="L136">        return queueType.getPrefix() + String.format(&quot;%02d&quot;, count);</span>
+    }
+
+    private int calculatePosition(QueueType queueType) {
+<span class="fc" id="L140">        return (int) ticketRepository.countByQueueTypeAndStatus(queueType, TicketStatus.EN_ESPERA) + 1;</span>
+    }
+
+    private void updatePosition(Ticket ticket) {
+<span class="nc bnc" id="L144" title="All 2 branches missed.">        if (ticket.getStatus() == TicketStatus.EN_ESPERA) {</span>
+<span class="nc" id="L145">            long ahead = ticketRepository.countTicketsAheadInQueue(ticket.getQueueType(), ticket.getCreatedAt());</span>
+<span class="nc" id="L146">            ticket.setPositionInQueue((int) ahead + 1);</span>
+<span class="nc" id="L147">            ticket.setEstimatedWaitMinutes(ticket.getPositionInQueue() * ticket.getQueueType().getAverageTimeMinutes());</span>
+<span class="nc" id="L148">        } else {</span>
+<span class="nc" id="L149">            ticket.setPositionInQueue(0);</span>
+<span class="nc" id="L150">            ticket.setEstimatedWaitMinutes(0);</span>
+        }
+<span class="nc" id="L152">    }</span>
+
+    private TicketResponse toResponse(Ticket ticket) {
+<span class="fc" id="L155">        return new TicketResponse(</span>
+<span class="fc" id="L156">            ticket.getCodigoReferencia(),</span>
+<span class="fc" id="L157">            ticket.getNumero(),</span>
+<span class="fc" id="L158">            ticket.getNationalId(),</span>
+<span class="fc" id="L159">            ticket.getBranchOffice(),</span>
+<span class="fc" id="L160">            ticket.getQueueType(),</span>
+<span class="fc" id="L161">            ticket.getStatus(),</span>
+<span class="fc" id="L162">            ticket.getPositionInQueue(),</span>
+<span class="fc" id="L163">            ticket.getEstimatedWaitMinutes(),</span>
+<span class="pc bpc" id="L164" title="1 of 2 branches missed.">            ticket.getAssignedAdvisor() != null ? ticket.getAssignedAdvisor().getName() : null,</span>
+<span class="fc" id="L165">            ticket.getAssignedModuleNumber(),</span>
+<span class="fc" id="L166">            ticket.getCreatedAt(),</span>
+<span class="fc" id="L167">            ticket.getAssignedAt(),</span>
+<span class="fc" id="L168">            ticket.getCompletedAt(),</span>
+<span class="fc" id="L169">            ticket.getActualServiceTimeMinutes()</span>
+        );
+    }
+
+    private TicketPositionResponse toPositionResponse(Ticket ticket) {
+<span class="nc bnc" id="L174" title="All 5 branches missed.">        String message = switch (ticket.getStatus()) {</span>
+<span class="nc" id="L175">            case EN_ESPERA -&gt; &quot;Tu ticket está en espera. Posición: &quot; + ticket.getPositionInQueue();</span>
+<span class="nc" id="L176">            case PROXIMO -&gt; &quot;¡Pronto será tu turno! Por favor acércate a la sucursal.&quot;;</span>
+<span class="nc" id="L177">            case ATENDIENDO -&gt; &quot;Dirígete al módulo &quot; + ticket.getAssignedModuleNumber() + &quot; - Asesor: &quot; + ticket.getAssignedAdvisor().getName();</span>
+<span class="nc" id="L178">            case COMPLETADO -&gt; &quot;Tu atención ha sido completada. Gracias por tu visita.&quot;;</span>
+<span class="nc" id="L179">            default -&gt; &quot;Estado: &quot; + ticket.getStatus().getDescription();</span>
+        };
+
+<span class="nc" id="L182">        return new TicketPositionResponse(</span>
+<span class="nc" id="L183">            ticket.getNumero(),</span>
+<span class="nc" id="L184">            ticket.getStatus(),</span>
+<span class="nc" id="L185">            ticket.getPositionInQueue(),</span>
+<span class="nc" id="L186">            ticket.getEstimatedWaitMinutes(),</span>
+<span class="nc" id="L187">            ticket.getQueueType(),</span>
+<span class="nc bnc" id="L188" title="All 2 branches missed.">            ticket.getAssignedAdvisor() != null ? ticket.getAssignedAdvisor().getName() : null,</span>
+<span class="nc" id="L189">            ticket.getAssignedModuleNumber(),</span>
+            message,
+<span class="nc" id="L191">            LocalDateTime.now()</span>
+        );
+    }
+
+    private TicketByRutResponse.ActiveTicketInfo toActiveTicketInfo(Ticket ticket) {
+<span class="nc" id="L196">        return new TicketByRutResponse.ActiveTicketInfo(</span>
+<span class="nc" id="L197">            ticket.getNumero(),</span>
+<span class="nc" id="L198">            ticket.getStatus().name(),</span>
+<span class="nc" id="L199">            ticket.getPositionInQueue(),</span>
+<span class="nc" id="L200">            ticket.getEstimatedWaitMinutes(),</span>
+<span class="nc" id="L201">            ticket.getQueueType().name(),</span>
+<span class="nc" id="L202">            &quot;Tu ticket &quot; + ticket.getNumero() + &quot; está en posición &quot; + ticket.getPositionInQueue(),</span>
+<span class="nc" id="L203">            LocalDateTime.now()</span>
+        );
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

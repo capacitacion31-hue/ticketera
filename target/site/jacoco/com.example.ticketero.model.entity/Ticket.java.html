@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>Ticket.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Ticketero API</a> &gt; <a href="index.source.html" class="el_package">com.example.ticketero.model.entity</a> &gt; <span class="el_source">Ticket.java</span></div><h1>Ticket.java</h1><pre class="source lang-java linenums">package com.example.ticketero.model.entity;
+
+import com.example.ticketero.model.enums.QueueType;
+import com.example.ticketero.model.enums.TicketStatus;
+import jakarta.persistence.*;
+import lombok.*;
+
+import java.time.LocalDateTime;
+import java.util.UUID;
+
+@Entity
+@Table(name = &quot;ticket&quot;)
+@Getter
+@Setter
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
+public class Ticket {
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+
+    @Column(name = &quot;codigo_referencia&quot;, nullable = false, unique = true)
+    private UUID codigoReferencia;
+
+    @Column(nullable = false, unique = true, length = 10)
+    private String numero;
+
+    @Column(name = &quot;national_id&quot;, nullable = false, length = 20)
+    private String nationalId;
+
+    @Column(length = 20)
+    private String telefono;
+
+    @Column(name = &quot;branch_office&quot;, nullable = false, length = 100)
+    private String branchOffice;
+
+    @Enumerated(EnumType.STRING)
+    @Column(name = &quot;queue_type&quot;, nullable = false, length = 20)
+    private QueueType queueType;
+
+    @Enumerated(EnumType.STRING)
+    @Column(nullable = false, length = 20)
+    private TicketStatus status;
+
+    @Column(name = &quot;position_in_queue&quot;, nullable = false)
+    private Integer positionInQueue;
+
+    @Column(name = &quot;estimated_wait_minutes&quot;, nullable = false)
+    private Integer estimatedWaitMinutes;
+
+    @ManyToOne(fetch = FetchType.LAZY)
+    @JoinColumn(name = &quot;assigned_advisor_id&quot;)
+    @ToString.Exclude
+    private Advisor assignedAdvisor;
+
+    @Column(name = &quot;assigned_module_number&quot;)
+    private Integer assignedModuleNumber;
+
+    @Column(name = &quot;assigned_at&quot;)
+    private LocalDateTime assignedAt;
+
+    @Column(name = &quot;completed_at&quot;)
+    private LocalDateTime completedAt;
+
+    @Column(name = &quot;actual_service_time_minutes&quot;)
+    private Integer actualServiceTimeMinutes;
+
+    @Column(name = &quot;created_at&quot;, nullable = false, updatable = false)
+    private LocalDateTime createdAt;
+
+    @Column(name = &quot;updated_at&quot;)
+    private LocalDateTime updatedAt;
+
+    @PrePersist
+    protected void onCreate() {
+<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (this.createdAt == null) {</span>
+<span class="fc" id="L79">            this.createdAt = LocalDateTime.now();</span>
+        }
+<span class="fc" id="L81">        this.updatedAt = LocalDateTime.now();</span>
+<span class="fc bfc" id="L82" title="All 2 branches covered.">        if (this.codigoReferencia == null) {</span>
+<span class="fc" id="L83">            this.codigoReferencia = UUID.randomUUID();</span>
+        }
+<span class="fc bfc" id="L85" title="All 2 branches covered.">        if (this.status == null) {</span>
+<span class="fc" id="L86">            this.status = TicketStatus.EN_ESPERA;</span>
+        }
+<span class="fc" id="L88">    }</span>
+
+    @PreUpdate
+    protected void onUpdate() {
+<span class="fc" id="L92">        this.updatedAt = LocalDateTime.now();</span>
+<span class="fc" id="L93">    }</span>
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

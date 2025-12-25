@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>AdminController.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Ticketero API</a> &gt; <a href="index.source.html" class="el_package">com.example.ticketero.controller</a> &gt; <span class="el_source">AdminController.java</span></div><h1>AdminController.java</h1><pre class="source lang-java linenums">package com.example.ticketero.controller;
+
+import com.example.ticketero.model.dto.request.AdvisorStatusRequest;
+import com.example.ticketero.model.dto.response.*;
+import com.example.ticketero.model.enums.QueueType;
+import com.example.ticketero.service.AdvisorService;
+import com.example.ticketero.service.AuditService;
+import com.example.ticketero.service.DashboardService;
+import com.example.ticketero.service.QueueService;
+import jakarta.validation.Valid;
+import lombok.RequiredArgsConstructor;
+import lombok.extern.slf4j.Slf4j;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
+
+@RestController
+@RequestMapping(&quot;/api/admin&quot;)
+@RequiredArgsConstructor
+<span class="fc" id="L21">@Slf4j</span>
+public class AdminController {
+
+    private final DashboardService dashboardService;
+    private final QueueService queueService;
+    private final AdvisorService advisorService;
+    private final AuditService auditService;
+
+    @GetMapping(&quot;/dashboard&quot;)
+    public ResponseEntity&lt;DashboardResponse&gt; getDashboard() {
+<span class="fc" id="L31">        DashboardResponse response = dashboardService.getDashboard();</span>
+<span class="fc" id="L32">        return ResponseEntity.ok(response);</span>
+    }
+
+    @GetMapping(&quot;/summary&quot;)
+    public ResponseEntity&lt;PerformanceSummaryResponse&gt; getPerformanceSummary() {
+<span class="fc" id="L37">        PerformanceSummaryResponse response = dashboardService.getPerformanceSummary();</span>
+<span class="fc" id="L38">        return ResponseEntity.ok(response);</span>
+    }
+
+    @GetMapping(&quot;/queues&quot;)
+    public ResponseEntity&lt;List&lt;QueueSummaryResponse&gt;&gt; getAllQueues() {
+<span class="fc" id="L43">        List&lt;QueueSummaryResponse&gt; response = queueService.getAllQueuesSummary();</span>
+<span class="fc" id="L44">        return ResponseEntity.ok(response);</span>
+    }
+
+    @GetMapping(&quot;/queues/{type}&quot;)
+    public ResponseEntity&lt;QueueSummaryResponse&gt; getQueueSummary(@PathVariable QueueType type) {
+<span class="fc" id="L49">        QueueSummaryResponse response = queueService.getQueueSummary(type);</span>
+<span class="fc" id="L50">        return ResponseEntity.ok(response);</span>
+    }
+
+    @GetMapping(&quot;/queues/{type}/stats&quot;)
+    public ResponseEntity&lt;QueueStatsResponse&gt; getQueueStats(@PathVariable QueueType type) {
+<span class="fc" id="L55">        QueueStatsResponse response = queueService.getQueueStats(type);</span>
+<span class="fc" id="L56">        return ResponseEntity.ok(response);</span>
+    }
+
+    @GetMapping(&quot;/advisors&quot;)
+    public ResponseEntity&lt;List&lt;AdvisorResponse&gt;&gt; getAllAdvisors() {
+<span class="fc" id="L61">        List&lt;AdvisorResponse&gt; response = advisorService.getAllAdvisors();</span>
+<span class="fc" id="L62">        return ResponseEntity.ok(response);</span>
+    }
+
+    @GetMapping(&quot;/advisors/{id}/stats&quot;)
+    public ResponseEntity&lt;AdvisorStatsResponse&gt; getAdvisorStats(@PathVariable Long id) {
+<span class="fc" id="L67">        AdvisorStatsResponse response = advisorService.getAdvisorStats(id);</span>
+<span class="fc" id="L68">        return ResponseEntity.ok(response);</span>
+    }
+
+    @PutMapping(&quot;/advisors/{id}/status&quot;)
+    public ResponseEntity&lt;AdvisorStatusChangeResponse&gt; changeAdvisorStatus(
+        @PathVariable Long id,
+        @Valid @RequestBody AdvisorStatusRequest request
+    ) {
+<span class="fc" id="L76">        log.info(&quot;Changing advisor {} status to {}&quot;, id, request.status());</span>
+<span class="fc" id="L77">        AdvisorStatusChangeResponse response = advisorService.changeStatus(id, request);</span>
+<span class="fc" id="L78">        return ResponseEntity.ok(response);</span>
+    }
+
+    @GetMapping(&quot;/audit/ticket/{ticketId}&quot;)
+    public ResponseEntity&lt;AuditEventResponse&gt; getTicketAudit(@PathVariable String ticketId) {
+<span class="fc" id="L83">        AuditEventResponse response = auditService.getAuditTrail(&quot;TICKET&quot;, ticketId);</span>
+<span class="fc" id="L84">        return ResponseEntity.ok(response);</span>
+    }
+
+    @GetMapping(&quot;/audit/advisor/{advisorId}&quot;)
+    public ResponseEntity&lt;AuditEventResponse&gt; getAdvisorAudit(@PathVariable String advisorId) {
+<span class="fc" id="L89">        AuditEventResponse response = auditService.getAuditTrail(&quot;ADVISOR&quot;, advisorId);</span>
+<span class="fc" id="L90">        return ResponseEntity.ok(response);</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

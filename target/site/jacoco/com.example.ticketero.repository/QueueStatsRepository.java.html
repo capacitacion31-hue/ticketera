@@ -1,0 +1,123 @@
+<?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>QueueStatsRepository.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Ticketero API</a> &gt; <a href="index.source.html" class="el_package">com.example.ticketero.repository</a> &gt; <span class="el_source">QueueStatsRepository.java</span></div><h1>QueueStatsRepository.java</h1><pre class="source lang-java linenums">package com.example.ticketero.repository;
+
+import com.example.ticketero.model.entity.Ticket;
+import com.example.ticketero.model.enums.QueueType;
+import com.example.ticketero.model.enums.TicketStatus;
+import org.springframework.data.jpa.repository.JpaRepository;
+import org.springframework.data.jpa.repository.Query;
+import org.springframework.data.repository.query.Param;
+import org.springframework.stereotype.Repository;
+
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.util.List;
+
+@Repository
+public interface QueueStatsRepository extends JpaRepository&lt;Ticket, Long&gt; {
+
+    // Estadísticas por cola - usando queries derivadas simples
+    long countByQueueTypeAndStatusAndCreatedAtBetween(
+        QueueType queueType, 
+        TicketStatus status,
+        LocalDateTime startDate,
+        LocalDateTime endDate
+    );
+
+    // Queries JPQL simples para estadísticas
+    @Query(&quot;&quot;&quot;
+        SELECT AVG(CAST(t.actualServiceTimeMinutes AS double)) FROM Ticket t 
+        WHERE t.queueType = :queueType 
+        AND t.status = 'COMPLETADO' 
+        AND t.completedAt BETWEEN :startDate AND :endDate
+        &quot;&quot;&quot;)
+    Double getAverageServiceTimeBetween(
+        @Param(&quot;queueType&quot;) QueueType queueType,
+        @Param(&quot;startDate&quot;) LocalDateTime startDate,
+        @Param(&quot;endDate&quot;) LocalDateTime endDate
+    );
+
+    @Query(&quot;&quot;&quot;
+        SELECT t FROM Ticket t 
+        WHERE t.queueType = :queueType 
+        AND t.assignedAt IS NOT NULL 
+        AND t.createdAt BETWEEN :startDate AND :endDate
+        &quot;&quot;&quot;)
+    List&lt;Ticket&gt; findAssignedTicketsBetween(
+        @Param(&quot;queueType&quot;) QueueType queueType,
+        @Param(&quot;startDate&quot;) LocalDateTime startDate,
+        @Param(&quot;endDate&quot;) LocalDateTime endDate
+    );
+
+    // Tickets críticos por tiempo límite
+    @Query(&quot;&quot;&quot;
+        SELECT t FROM Ticket t 
+        WHERE t.status = 'EN_ESPERA' 
+        AND (
+            (t.queueType = 'CAJA' AND t.createdAt &lt; :cajaLimit) OR
+            (t.queueType = 'PERSONAL_BANKER' AND t.createdAt &lt; :personalLimit) OR
+            (t.queueType = 'EMPRESAS' AND t.createdAt &lt; :empresasLimit) OR
+            (t.queueType = 'GERENCIA' AND t.createdAt &lt; :gerenciaLimit)
+        )
+        ORDER BY 
+            CASE t.queueType 
+                WHEN 'GERENCIA' THEN 4
+                WHEN 'EMPRESAS' THEN 3
+                WHEN 'PERSONAL_BANKER' THEN 2
+                WHEN 'CAJA' THEN 1
+            END DESC, 
+            t.createdAt ASC
+        &quot;&quot;&quot;)
+    List&lt;Ticket&gt; findCriticalTicketsByTimeLimit(
+        @Param(&quot;cajaLimit&quot;) LocalDateTime cajaLimit,
+        @Param(&quot;personalLimit&quot;) LocalDateTime personalLimit,
+        @Param(&quot;empresasLimit&quot;) LocalDateTime empresasLimit,
+        @Param(&quot;gerenciaLimit&quot;) LocalDateTime gerenciaLimit
+    );
+
+    // Métodos de conveniencia que usan la fecha actual
+    default long countTodayByQueueAndStatus(QueueType queueType, TicketStatus status, LocalDate date) {
+<span class="fc" id="L79">        LocalDateTime startOfDay = date.atStartOfDay();</span>
+<span class="fc" id="L80">        LocalDateTime endOfDay = date.atTime(23, 59, 59);</span>
+<span class="fc" id="L81">        return countByQueueTypeAndStatusAndCreatedAtBetween(queueType, status, startOfDay, endOfDay);</span>
+    }
+
+    default Double getAverageServiceTimeToday(QueueType queueType, LocalDate date) {
+<span class="fc" id="L85">        LocalDateTime startOfDay = date.atStartOfDay();</span>
+<span class="fc" id="L86">        LocalDateTime endOfDay = date.atTime(23, 59, 59);</span>
+<span class="fc" id="L87">        return getAverageServiceTimeBetween(queueType, startOfDay, endOfDay);</span>
+    }
+
+    default Double getAverageWaitTimeToday(QueueType queueType, LocalDate date) {
+<span class="fc" id="L91">        LocalDateTime startOfDay = date.atStartOfDay();</span>
+<span class="fc" id="L92">        LocalDateTime endOfDay = date.atTime(23, 59, 59);</span>
+        
+<span class="fc" id="L94">        List&lt;Ticket&gt; tickets = findAssignedTicketsBetween(queueType, startOfDay, endOfDay);</span>
+<span class="fc bfc" id="L95" title="All 2 branches covered.">        if (tickets.isEmpty()) {</span>
+<span class="fc" id="L96">            return null;</span>
+        }
+        
+<span class="fc" id="L99">        double totalWaitMinutes = tickets.stream()</span>
+<span class="fc" id="L100">            .mapToLong(ticket -&gt; {</span>
+<span class="fc" id="L101">                LocalDateTime created = ticket.getCreatedAt();</span>
+<span class="fc" id="L102">                LocalDateTime assigned = ticket.getAssignedAt();</span>
+<span class="fc" id="L103">                return java.time.Duration.between(created, assigned).toMinutes();</span>
+            })
+<span class="fc" id="L105">            .average()</span>
+<span class="fc" id="L106">            .orElse(0.0);</span>
+            
+<span class="fc" id="L108">        return totalWaitMinutes;</span>
+    }
+
+    default long countTodayByQueueAndStatus(QueueType queueType, TicketStatus status) {
+<span class="nc" id="L112">        return countTodayByQueueAndStatus(queueType, status, LocalDate.now());</span>
+    }
+
+    default Double getAverageServiceTimeToday(QueueType queueType) {
+<span class="nc" id="L116">        return getAverageServiceTimeToday(queueType, LocalDate.now());</span>
+    }
+
+    default Double getAverageWaitTimeToday(QueueType queueType) {
+<span class="nc" id="L120">        return getAverageWaitTimeToday(queueType, LocalDate.now());</span>
+    }
+}
+</pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
