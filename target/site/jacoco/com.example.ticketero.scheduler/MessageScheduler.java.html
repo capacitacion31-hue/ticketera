@@ -8,7 +8,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-<span class="fc" id="L11">@Slf4j</span>
+<span class="nc" id="L11">@Slf4j</span>
 public class MessageScheduler {
 
     private final MessageService messageService;
@@ -16,19 +16,19 @@ public class MessageScheduler {
     @Scheduled(fixedDelay = 5000) // Cada 5 segundos
     public void processPendingMessages() {
         try {
-<span class="fc" id="L19">            messageService.processPendingMessages();</span>
-<span class="fc" id="L20">        } catch (Exception e) {</span>
-<span class="fc" id="L21">            log.error(&quot;Error processing pending messages&quot;, e);</span>
-<span class="fc" id="L22">        }</span>
-<span class="fc" id="L23">    }</span>
+<span class="nc" id="L19">            messageService.processPendingMessages();</span>
+<span class="nc" id="L20">        } catch (Exception e) {</span>
+<span class="nc" id="L21">            log.error(&quot;Error processing pending messages&quot;, e);</span>
+        }
+<span class="nc" id="L23">    }</span>
 
     @Scheduled(fixedDelay = 30000) // Cada 30 segundos
     public void processRetryMessages() {
         try {
-<span class="fc" id="L28">            messageService.processRetryMessages();</span>
-<span class="fc" id="L29">        } catch (Exception e) {</span>
-<span class="fc" id="L30">            log.error(&quot;Error processing retry messages&quot;, e);</span>
-<span class="fc" id="L31">        }</span>
-<span class="fc" id="L32">    }</span>
+<span class="nc" id="L28">            messageService.processRetryMessages();</span>
+<span class="nc" id="L29">        } catch (Exception e) {</span>
+<span class="nc" id="L30">            log.error(&quot;Error processing retry messages&quot;, e);</span>
+        }
+<span class="nc" id="L32">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

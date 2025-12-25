@@ -12,7 +12,7 @@ import org.springframework.stereotype.Component;
 
 @Component
 @RequiredArgsConstructor
-<span class="fc" id="L15">@Slf4j</span>
+<span class="nc" id="L15">@Slf4j</span>
 public class MetricsScheduler {
 
     private final QueueStatsRepository queueStatsRepository;
@@ -21,55 +21,55 @@ public class MetricsScheduler {
     @Scheduled(fixedDelay = 60000) // Cada minuto
     public void logSystemMetrics() {
         try {
-<span class="fc" id="L24">            logQueueMetrics();</span>
-<span class="fc" id="L25">            logAdvisorMetrics();</span>
-<span class="fc" id="L26">        } catch (Exception e) {</span>
-<span class="fc" id="L27">            log.error(&quot;Error logging system metrics&quot;, e);</span>
-<span class="fc" id="L28">        }</span>
-<span class="fc" id="L29">    }</span>
+<span class="nc" id="L24">            logQueueMetrics();</span>
+<span class="nc" id="L25">            logAdvisorMetrics();</span>
+<span class="nc" id="L26">        } catch (Exception e) {</span>
+<span class="nc" id="L27">            log.error(&quot;Error logging system metrics&quot;, e);</span>
+        }
+<span class="nc" id="L29">    }</span>
 
     @Scheduled(cron = &quot;0 */15 * * * ?&quot;) // Cada 15 minutos
     public void logDetailedMetrics() {
         try {
-<span class="fc bfc" id="L34" title="All 2 branches covered.">            for (QueueType queueType : QueueType.values()) {</span>
-<span class="fc" id="L35">                long waiting = queueStatsRepository.countTodayByQueueAndStatus(queueType, TicketStatus.EN_ESPERA);</span>
-<span class="fc" id="L36">                long serving = queueStatsRepository.countTodayByQueueAndStatus(queueType, TicketStatus.ATENDIENDO);</span>
-<span class="fc" id="L37">                long completed = queueStatsRepository.countTodayByQueueAndStatus(queueType, TicketStatus.COMPLETADO);</span>
+<span class="nc bnc" id="L34" title="All 2 branches missed.">            for (QueueType queueType : QueueType.values()) {</span>
+<span class="nc" id="L35">                long waiting = queueStatsRepository.countTodayByQueueAndStatus(queueType, TicketStatus.EN_ESPERA);</span>
+<span class="nc" id="L36">                long serving = queueStatsRepository.countTodayByQueueAndStatus(queueType, TicketStatus.ATENDIENDO);</span>
+<span class="nc" id="L37">                long completed = queueStatsRepository.countTodayByQueueAndStatus(queueType, TicketStatus.COMPLETADO);</span>
                 
-<span class="fc" id="L39">                Double avgServiceTime = queueStatsRepository.getAverageServiceTimeToday(queueType);</span>
-<span class="fc" id="L40">                Double avgWaitTime = queueStatsRepository.getAverageWaitTimeToday(queueType);</span>
+<span class="nc" id="L39">                Double avgServiceTime = queueStatsRepository.getAverageServiceTimeToday(queueType);</span>
+<span class="nc" id="L40">                Double avgWaitTime = queueStatsRepository.getAverageWaitTimeToday(queueType);</span>
                 
-<span class="fc" id="L42">                log.info(&quot;QUEUE_METRICS [{}] - Waiting: {}, Serving: {}, Completed: {}, AvgService: {}min, AvgWait: {}min&quot;,</span>
-<span class="fc" id="L43">                    queueType, waiting, serving, completed, </span>
-<span class="fc bfc" id="L44" title="All 2 branches covered.">                    avgServiceTime != null ? avgServiceTime.intValue() : &quot;N/A&quot;,</span>
-<span class="fc bfc" id="L45" title="All 2 branches covered.">                    avgWaitTime != null ? avgWaitTime.intValue() : &quot;N/A&quot;);</span>
+<span class="nc" id="L42">                log.info(&quot;QUEUE_METRICS [{}] - Waiting: {}, Serving: {}, Completed: {}, AvgService: {}min, AvgWait: {}min&quot;,</span>
+<span class="nc" id="L43">                    queueType, waiting, serving, completed, </span>
+<span class="nc bnc" id="L44" title="All 2 branches missed.">                    avgServiceTime != null ? avgServiceTime.intValue() : &quot;N/A&quot;,</span>
+<span class="nc bnc" id="L45" title="All 2 branches missed.">                    avgWaitTime != null ? avgWaitTime.intValue() : &quot;N/A&quot;);</span>
             }
-<span class="fc" id="L47">        } catch (Exception e) {</span>
-<span class="fc" id="L48">            log.error(&quot;Error logging detailed metrics&quot;, e);</span>
-<span class="fc" id="L49">        }</span>
-<span class="fc" id="L50">    }</span>
+<span class="nc" id="L47">        } catch (Exception e) {</span>
+<span class="nc" id="L48">            log.error(&quot;Error logging detailed metrics&quot;, e);</span>
+        }
+<span class="nc" id="L50">    }</span>
 
     private void logQueueMetrics() {
-<span class="fc" id="L53">        long totalWaiting = 0;</span>
-<span class="fc" id="L54">        long totalServing = 0;</span>
+<span class="nc" id="L53">        long totalWaiting = 0;</span>
+<span class="nc" id="L54">        long totalServing = 0;</span>
         
-<span class="fc bfc" id="L56" title="All 2 branches covered.">        for (QueueType queueType : QueueType.values()) {</span>
-<span class="fc" id="L57">            long waiting = queueStatsRepository.countTodayByQueueAndStatus(queueType, TicketStatus.EN_ESPERA);</span>
-<span class="fc" id="L58">            long serving = queueStatsRepository.countTodayByQueueAndStatus(queueType, TicketStatus.ATENDIENDO);</span>
+<span class="nc bnc" id="L56" title="All 2 branches missed.">        for (QueueType queueType : QueueType.values()) {</span>
+<span class="nc" id="L57">            long waiting = queueStatsRepository.countTodayByQueueAndStatus(queueType, TicketStatus.EN_ESPERA);</span>
+<span class="nc" id="L58">            long serving = queueStatsRepository.countTodayByQueueAndStatus(queueType, TicketStatus.ATENDIENDO);</span>
             
-<span class="fc" id="L60">            totalWaiting += waiting;</span>
-<span class="fc" id="L61">            totalServing += serving;</span>
+<span class="nc" id="L60">            totalWaiting += waiting;</span>
+<span class="nc" id="L61">            totalServing += serving;</span>
         }
         
-<span class="fc" id="L64">        log.info(&quot;SYSTEM_METRICS - Total waiting: {}, Total serving: {}&quot;, totalWaiting, totalServing);</span>
-<span class="fc" id="L65">    }</span>
+<span class="nc" id="L64">        log.info(&quot;SYSTEM_METRICS - Total waiting: {}, Total serving: {}&quot;, totalWaiting, totalServing);</span>
+<span class="nc" id="L65">    }</span>
 
     private void logAdvisorMetrics() {
-<span class="fc" id="L68">        long available = advisorRepository.countByStatus(AdvisorStatus.AVAILABLE);</span>
-<span class="fc" id="L69">        long busy = advisorRepository.countByStatus(AdvisorStatus.BUSY);</span>
-<span class="fc" id="L70">        long offline = advisorRepository.countByStatus(AdvisorStatus.OFFLINE);</span>
+<span class="nc" id="L68">        long available = advisorRepository.countByStatus(AdvisorStatus.AVAILABLE);</span>
+<span class="nc" id="L69">        long busy = advisorRepository.countByStatus(AdvisorStatus.BUSY);</span>
+<span class="nc" id="L70">        long offline = advisorRepository.countByStatus(AdvisorStatus.OFFLINE);</span>
         
-<span class="fc" id="L72">        log.info(&quot;ADVISOR_METRICS - Available: {}, Busy: {}, Offline: {}&quot;, available, busy, offline);</span>
-<span class="fc" id="L73">    }</span>
+<span class="nc" id="L72">        log.info(&quot;ADVISOR_METRICS - Available: {}, Busy: {}, Offline: {}&quot;, available, busy, offline);</span>
+<span class="nc" id="L73">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

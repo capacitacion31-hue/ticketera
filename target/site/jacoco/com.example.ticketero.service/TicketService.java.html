@@ -22,7 +22,7 @@ import java.util.UUID;
 
 @Service
 @RequiredArgsConstructor
-<span class="fc" id="L25">@Slf4j</span>
+<span class="nc" id="L25">@Slf4j</span>
 @Transactional(readOnly = true)
 public class TicketService {
 
@@ -34,42 +34,42 @@ public class TicketService {
     @Transactional
     public TicketResponse create(TicketRequest request) {
         // RN-001: Validar ticket activo existente
-<span class="fc" id="L37">        validateNoActiveTicket(request.nationalId());</span>
+<span class="nc" id="L37">        validateNoActiveTicket(request.nationalId());</span>
 
         // Generar número de ticket
-<span class="fc" id="L40">        String numero = generateTicketNumber(request.queueType());</span>
+<span class="nc" id="L40">        String numero = generateTicketNumber(request.queueType());</span>
         
         // Calcular posición en cola
-<span class="fc" id="L43">        int position = calculatePosition(request.queueType());</span>
-<span class="fc" id="L44">        int estimatedWait = position * request.queueType().getAverageTimeMinutes();</span>
+<span class="nc" id="L43">        int position = calculatePosition(request.queueType());</span>
+<span class="nc" id="L44">        int estimatedWait = position * request.queueType().getAverageTimeMinutes();</span>
 
-<span class="fc" id="L46">        Ticket ticket = Ticket.builder()</span>
-<span class="fc" id="L47">            .codigoReferencia(UUID.randomUUID())</span>
-<span class="fc" id="L48">            .numero(numero)</span>
-<span class="fc" id="L49">            .nationalId(request.nationalId())</span>
-<span class="fc" id="L50">            .telefono(request.telefono())</span>
-<span class="fc" id="L51">            .branchOffice(request.branchOffice())</span>
-<span class="fc" id="L52">            .queueType(request.queueType())</span>
-<span class="fc" id="L53">            .status(TicketStatus.EN_ESPERA)</span>
-<span class="fc" id="L54">            .positionInQueue(position)</span>
-<span class="fc" id="L55">            .estimatedWaitMinutes(estimatedWait)</span>
-<span class="fc" id="L56">            .build();</span>
+<span class="nc" id="L46">        Ticket ticket = Ticket.builder()</span>
+<span class="nc" id="L47">            .codigoReferencia(UUID.randomUUID())</span>
+<span class="nc" id="L48">            .numero(numero)</span>
+<span class="nc" id="L49">            .nationalId(request.nationalId())</span>
+<span class="nc" id="L50">            .telefono(request.telefono())</span>
+<span class="nc" id="L51">            .branchOffice(request.branchOffice())</span>
+<span class="nc" id="L52">            .queueType(request.queueType())</span>
+<span class="nc" id="L53">            .status(TicketStatus.EN_ESPERA)</span>
+<span class="nc" id="L54">            .positionInQueue(position)</span>
+<span class="nc" id="L55">            .estimatedWaitMinutes(estimatedWait)</span>
+<span class="nc" id="L56">            .build();</span>
 
-<span class="fc" id="L58">        Ticket saved = ticketRepository.save(ticket);</span>
+<span class="nc" id="L58">        Ticket saved = ticketRepository.save(ticket);</span>
         
         // Auditoría
-<span class="fc" id="L61">        auditService.logTicketCreated(saved, request.nationalId());</span>
+<span class="nc" id="L61">        auditService.logTicketCreated(saved, request.nationalId());</span>
         
         // Programar mensaje de confirmación
-<span class="fc" id="L64">        messageService.scheduleTicketCreatedMessage(saved);</span>
+<span class="nc" id="L64">        messageService.scheduleTicketCreatedMessage(saved);</span>
         
-<span class="fc" id="L66">        log.info(&quot;Ticket created: {} for customer: {}&quot;, saved.getNumero(), request.nationalId());</span>
-<span class="fc" id="L67">        return toResponse(saved);</span>
+<span class="nc" id="L66">        log.info(&quot;Ticket created: {} for customer: {}&quot;, saved.getNumero(), request.nationalId());</span>
+<span class="nc" id="L67">        return toResponse(saved);</span>
     }
 
     public Optional&lt;TicketResponse&gt; findByCodigoReferencia(UUID codigoReferencia) {
-<span class="fc" id="L71">        return ticketRepository.findByCodigoReferencia(codigoReferencia)</span>
-<span class="fc" id="L72">            .map(this::toResponse);</span>
+<span class="nc" id="L71">        return ticketRepository.findByCodigoReferencia(codigoReferencia)</span>
+<span class="nc" id="L72">            .map(this::toResponse);</span>
     }
 
     public TicketPositionResponse getPosition(String numero) {
@@ -84,19 +84,19 @@ public class TicketService {
 
     public TicketByRutResponse findByRut(String nationalId) {
 <span class="nc" id="L86">        List&lt;TicketStatus&gt; activeStatuses = List.of(</span>
-            TicketStatus.EN_ESPERA, 
-            TicketStatus.PROXIMO, 
-            TicketStatus.ATENDIENDO
+<span class="nc" id="L87">            TicketStatus.EN_ESPERA, </span>
+<span class="nc" id="L88">            TicketStatus.PROXIMO, </span>
+<span class="nc" id="L89">            TicketStatus.ATENDIENDO</span>
         );
         
 <span class="nc" id="L92">        List&lt;Ticket&gt; activeTickets = ticketRepository.findByNationalIdAndStatusIn(nationalId, activeStatuses);</span>
         
 <span class="nc bnc" id="L94" title="All 2 branches missed.">        if (activeTickets.isEmpty()) {</span>
 <span class="nc" id="L95">            return new TicketByRutResponse(</span>
-                nationalId,
-                null,
-                &quot;No tienes tickets activos. Puedes crear uno nuevo en el terminal.&quot;,
-                null
+<span class="nc" id="L96">                nationalId,</span>
+<span class="nc" id="L97">                null,</span>
+<span class="nc" id="L98">                &quot;No tienes tickets activos. Puedes crear uno nuevo en el terminal.&quot;,</span>
+<span class="nc" id="L99">                null</span>
             );
         }
         
@@ -104,40 +104,40 @@ public class TicketService {
 <span class="nc" id="L104">        updatePosition(activeTicket);</span>
         
 <span class="nc" id="L106">        return new TicketByRutResponse(</span>
-            nationalId,
+<span class="nc" id="L107">            nationalId,</span>
 <span class="nc" id="L108">            toActiveTicketInfo(activeTicket),</span>
 <span class="nc" id="L109">            &quot;Tu ticket &quot; + activeTicket.getNumero() + &quot; está en posición &quot; + activeTicket.getPositionInQueue(),</span>
-            null
+<span class="nc" id="L110">            null</span>
         );
     }
 
     private void validateNoActiveTicket(String nationalId) {
-<span class="fc" id="L115">        List&lt;TicketStatus&gt; activeStatuses = List.of(</span>
-            TicketStatus.EN_ESPERA, 
-            TicketStatus.PROXIMO, 
-            TicketStatus.ATENDIENDO
+<span class="nc" id="L115">        List&lt;TicketStatus&gt; activeStatuses = List.of(</span>
+<span class="nc" id="L116">            TicketStatus.EN_ESPERA, </span>
+<span class="nc" id="L117">            TicketStatus.PROXIMO, </span>
+<span class="nc" id="L118">            TicketStatus.ATENDIENDO</span>
         );
         
-<span class="fc bfc" id="L121" title="All 2 branches covered.">        if (ticketRepository.existsByNationalIdAndStatusIn(nationalId, activeStatuses)) {</span>
-<span class="fc" id="L122">            List&lt;Ticket&gt; activeTickets = ticketRepository.findByNationalIdAndStatusIn(nationalId, activeStatuses);</span>
-<span class="fc" id="L123">            String activeTicketNumber = activeTickets.get(0).getNumero();</span>
-<span class="fc" id="L124">            throw new ActiveTicketExistsException(nationalId, activeTicketNumber);</span>
+<span class="nc bnc" id="L121" title="All 2 branches missed.">        if (ticketRepository.existsByNationalIdAndStatusIn(nationalId, activeStatuses)) {</span>
+<span class="nc" id="L122">            List&lt;Ticket&gt; activeTickets = ticketRepository.findByNationalIdAndStatusIn(nationalId, activeStatuses);</span>
+<span class="nc" id="L123">            String activeTicketNumber = activeTickets.get(0).getNumero();</span>
+<span class="nc" id="L124">            throw new ActiveTicketExistsException(nationalId, activeTicketNumber);</span>
         }
-<span class="fc" id="L126">    }</span>
+<span class="nc" id="L126">    }</span>
 
     private String generateTicketNumber(QueueType queueType) {
         // Contar TODOS los tickets de hoy para esta cola (no solo EN_ESPERA)
-<span class="fc" id="L130">        LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();</span>
-<span class="fc" id="L131">        long count = ticketRepository.findAll()</span>
-<span class="fc" id="L132">            .stream()</span>
-<span class="pc bnc" id="L133" title="All 2 branches missed.">            .filter(t -&gt; t.getQueueType() == queueType)</span>
-<span class="pc" id="L134">            .filter(t -&gt; t.getCreatedAt().isAfter(startOfDay))</span>
-<span class="fc" id="L135">            .count() + 1;</span>
-<span class="fc" id="L136">        return queueType.getPrefix() + String.format(&quot;%02d&quot;, count);</span>
+<span class="nc" id="L130">        LocalDateTime startOfDay = LocalDateTime.now().toLocalDate().atStartOfDay();</span>
+<span class="nc" id="L131">        long count = ticketRepository.findAll()</span>
+<span class="nc" id="L132">            .stream()</span>
+<span class="nc bnc" id="L133" title="All 2 branches missed.">            .filter(t -&gt; t.getQueueType() == queueType)</span>
+<span class="nc" id="L134">            .filter(t -&gt; t.getCreatedAt().isAfter(startOfDay))</span>
+<span class="nc" id="L135">            .count() + 1;</span>
+<span class="nc" id="L136">        return queueType.getPrefix() + String.format(&quot;%02d&quot;, count);</span>
     }
 
     private int calculatePosition(QueueType queueType) {
-<span class="fc" id="L140">        return (int) ticketRepository.countByQueueTypeAndStatus(queueType, TicketStatus.EN_ESPERA) + 1;</span>
+<span class="nc" id="L140">        return (int) ticketRepository.countByQueueTypeAndStatus(queueType, TicketStatus.EN_ESPERA) + 1;</span>
     }
 
     private void updatePosition(Ticket ticket) {
@@ -152,21 +152,21 @@ public class TicketService {
 <span class="nc" id="L152">    }</span>
 
     private TicketResponse toResponse(Ticket ticket) {
-<span class="fc" id="L155">        return new TicketResponse(</span>
-<span class="fc" id="L156">            ticket.getCodigoReferencia(),</span>
-<span class="fc" id="L157">            ticket.getNumero(),</span>
-<span class="fc" id="L158">            ticket.getNationalId(),</span>
-<span class="fc" id="L159">            ticket.getBranchOffice(),</span>
-<span class="fc" id="L160">            ticket.getQueueType(),</span>
-<span class="fc" id="L161">            ticket.getStatus(),</span>
-<span class="fc" id="L162">            ticket.getPositionInQueue(),</span>
-<span class="fc" id="L163">            ticket.getEstimatedWaitMinutes(),</span>
-<span class="pc bpc" id="L164" title="1 of 2 branches missed.">            ticket.getAssignedAdvisor() != null ? ticket.getAssignedAdvisor().getName() : null,</span>
-<span class="fc" id="L165">            ticket.getAssignedModuleNumber(),</span>
-<span class="fc" id="L166">            ticket.getCreatedAt(),</span>
-<span class="fc" id="L167">            ticket.getAssignedAt(),</span>
-<span class="fc" id="L168">            ticket.getCompletedAt(),</span>
-<span class="fc" id="L169">            ticket.getActualServiceTimeMinutes()</span>
+<span class="nc" id="L155">        return new TicketResponse(</span>
+<span class="nc" id="L156">            ticket.getCodigoReferencia(),</span>
+<span class="nc" id="L157">            ticket.getNumero(),</span>
+<span class="nc" id="L158">            ticket.getNationalId(),</span>
+<span class="nc" id="L159">            ticket.getBranchOffice(),</span>
+<span class="nc" id="L160">            ticket.getQueueType(),</span>
+<span class="nc" id="L161">            ticket.getStatus(),</span>
+<span class="nc" id="L162">            ticket.getPositionInQueue(),</span>
+<span class="nc" id="L163">            ticket.getEstimatedWaitMinutes(),</span>
+<span class="nc bnc" id="L164" title="All 2 branches missed.">            ticket.getAssignedAdvisor() != null ? ticket.getAssignedAdvisor().getName() : null,</span>
+<span class="nc" id="L165">            ticket.getAssignedModuleNumber(),</span>
+<span class="nc" id="L166">            ticket.getCreatedAt(),</span>
+<span class="nc" id="L167">            ticket.getAssignedAt(),</span>
+<span class="nc" id="L168">            ticket.getCompletedAt(),</span>
+<span class="nc" id="L169">            ticket.getActualServiceTimeMinutes()</span>
         );
     }
 
@@ -187,7 +187,7 @@ public class TicketService {
 <span class="nc" id="L187">            ticket.getQueueType(),</span>
 <span class="nc bnc" id="L188" title="All 2 branches missed.">            ticket.getAssignedAdvisor() != null ? ticket.getAssignedAdvisor().getName() : null,</span>
 <span class="nc" id="L189">            ticket.getAssignedModuleNumber(),</span>
-            message,
+<span class="nc" id="L190">            message,</span>
 <span class="nc" id="L191">            LocalDateTime.now()</span>
         );
     }

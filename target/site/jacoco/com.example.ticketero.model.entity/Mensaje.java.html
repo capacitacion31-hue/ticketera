@@ -51,10 +51,10 @@ public class Mensaje {
 
     @PrePersist
     protected void onCreate() {
-<span class="fc" id="L54">        this.createdAt = LocalDateTime.now();</span>
-<span class="fc bfc" id="L55" title="All 2 branches covered.">        if (this.estadoEnvio == null) {</span>
-<span class="fc" id="L56">            this.estadoEnvio = EstadoEnvio.PENDIENTE;</span>
+<span class="nc" id="L54">        this.createdAt = LocalDateTime.now();</span>
+<span class="nc bnc" id="L55" title="All 2 branches missed.">        if (this.estadoEnvio == null) {</span>
+<span class="nc" id="L56">            this.estadoEnvio = EstadoEnvio.PENDIENTE;</span>
         }
-<span class="fc" id="L58">    }</span>
+<span class="nc" id="L58">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

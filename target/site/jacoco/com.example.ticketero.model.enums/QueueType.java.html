@@ -1,10 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?><!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd"><html xmlns="http://www.w3.org/1999/xhtml" lang="es"><head><meta http-equiv="Content-Type" content="text/html;charset=UTF-8"/><link rel="stylesheet" href="../jacoco-resources/report.css" type="text/css"/><link rel="shortcut icon" href="../jacoco-resources/report.gif" type="image/gif"/><title>QueueType.java</title><link rel="stylesheet" href="../jacoco-resources/prettify.css" type="text/css"/><script type="text/javascript" src="../jacoco-resources/prettify.js"></script></head><body onload="window['PR_TAB_WIDTH']=4;prettyPrint()"><div class="breadcrumb" id="breadcrumb"><span class="info"><a href="../jacoco-sessions.html" class="el_session">Sessions</a></span><a href="../index.html" class="el_report">Ticketero API</a> &gt; <a href="index.source.html" class="el_package">com.example.ticketero.model.enums</a> &gt; <span class="el_source">QueueType.java</span></div><h1>QueueType.java</h1><pre class="source lang-java linenums">package com.example.ticketero.model.enums;
 
-<span class="fc" id="L3">public enum QueueType {</span>
-<span class="fc" id="L4">    CAJA(&quot;Caja&quot;, 5, 1, &quot;C&quot;, 45),</span>
-<span class="fc" id="L5">    PERSONAL_BANKER(&quot;Personal Banker&quot;, 15, 2, &quot;P&quot;, 60),</span>
-<span class="fc" id="L6">    EMPRESAS(&quot;Empresas&quot;, 20, 3, &quot;E&quot;, 75),</span>
-<span class="fc" id="L7">    GERENCIA(&quot;Gerencia&quot;, 30, 4, &quot;G&quot;, 90);</span>
+<span class="nc" id="L3">public enum QueueType {</span>
+<span class="nc" id="L4">    CAJA(&quot;Caja&quot;, 5, 1, &quot;C&quot;, 45),</span>
+<span class="nc" id="L5">    PERSONAL_BANKER(&quot;Personal Banker&quot;, 15, 2, &quot;P&quot;, 60),</span>
+<span class="nc" id="L6">    EMPRESAS(&quot;Empresas&quot;, 20, 3, &quot;E&quot;, 75),</span>
+<span class="nc" id="L7">    GERENCIA(&quot;Gerencia&quot;, 30, 4, &quot;G&quot;, 90);</span>
 
     private final String displayName;
     private final int averageTimeMinutes;
@@ -12,18 +12,18 @@
     private final String prefix;
     private final int maxWaitTimeMinutes;
 
-<span class="fc" id="L15">    QueueType(String displayName, int averageTimeMinutes, int priority, String prefix, int maxWaitTimeMinutes) {</span>
-<span class="fc" id="L16">        this.displayName = displayName;</span>
-<span class="fc" id="L17">        this.averageTimeMinutes = averageTimeMinutes;</span>
-<span class="fc" id="L18">        this.priority = priority;</span>
-<span class="fc" id="L19">        this.prefix = prefix;</span>
-<span class="fc" id="L20">        this.maxWaitTimeMinutes = maxWaitTimeMinutes;</span>
-<span class="fc" id="L21">    }</span>
+<span class="nc" id="L15">    QueueType(String displayName, int averageTimeMinutes, int priority, String prefix, int maxWaitTimeMinutes) {</span>
+<span class="nc" id="L16">        this.displayName = displayName;</span>
+<span class="nc" id="L17">        this.averageTimeMinutes = averageTimeMinutes;</span>
+<span class="nc" id="L18">        this.priority = priority;</span>
+<span class="nc" id="L19">        this.prefix = prefix;</span>
+<span class="nc" id="L20">        this.maxWaitTimeMinutes = maxWaitTimeMinutes;</span>
+<span class="nc" id="L21">    }</span>
 
-<span class="fc" id="L23">    public String getDisplayName() { return displayName; }</span>
-<span class="fc" id="L24">    public int getAverageTimeMinutes() { return averageTimeMinutes; }</span>
-<span class="fc" id="L25">    public int getPriority() { return priority; }</span>
-<span class="fc" id="L26">    public String getPrefix() { return prefix; }</span>
-<span class="fc" id="L27">    public int getMaxWaitTimeMinutes() { return maxWaitTimeMinutes; }</span>
+<span class="nc" id="L23">    public String getDisplayName() { return displayName; }</span>
+<span class="nc" id="L24">    public int getAverageTimeMinutes() { return averageTimeMinutes; }</span>
+<span class="nc" id="L25">    public int getPriority() { return priority; }</span>
+<span class="nc" id="L26">    public String getPrefix() { return prefix; }</span>
+<span class="nc" id="L27">    public int getMaxWaitTimeMinutes() { return maxWaitTimeMinutes; }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

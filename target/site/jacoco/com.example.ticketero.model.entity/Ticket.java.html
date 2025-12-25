@@ -75,21 +75,21 @@ public class Ticket {
 
     @PrePersist
     protected void onCreate() {
-<span class="fc bfc" id="L78" title="All 2 branches covered.">        if (this.createdAt == null) {</span>
-<span class="fc" id="L79">            this.createdAt = LocalDateTime.now();</span>
+<span class="nc bnc" id="L78" title="All 2 branches missed.">        if (this.createdAt == null) {</span>
+<span class="nc" id="L79">            this.createdAt = LocalDateTime.now();</span>
         }
-<span class="fc" id="L81">        this.updatedAt = LocalDateTime.now();</span>
-<span class="fc bfc" id="L82" title="All 2 branches covered.">        if (this.codigoReferencia == null) {</span>
-<span class="fc" id="L83">            this.codigoReferencia = UUID.randomUUID();</span>
+<span class="nc" id="L81">        this.updatedAt = LocalDateTime.now();</span>
+<span class="nc bnc" id="L82" title="All 2 branches missed.">        if (this.codigoReferencia == null) {</span>
+<span class="nc" id="L83">            this.codigoReferencia = UUID.randomUUID();</span>
         }
-<span class="fc bfc" id="L85" title="All 2 branches covered.">        if (this.status == null) {</span>
-<span class="fc" id="L86">            this.status = TicketStatus.EN_ESPERA;</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        if (this.status == null) {</span>
+<span class="nc" id="L86">            this.status = TicketStatus.EN_ESPERA;</span>
         }
-<span class="fc" id="L88">    }</span>
+<span class="nc" id="L88">    }</span>
 
     @PreUpdate
     protected void onUpdate() {
-<span class="fc" id="L92">        this.updatedAt = LocalDateTime.now();</span>
-<span class="fc" id="L93">    }</span>
+<span class="nc" id="L92">        this.updatedAt = LocalDateTime.now();</span>
+<span class="nc" id="L93">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

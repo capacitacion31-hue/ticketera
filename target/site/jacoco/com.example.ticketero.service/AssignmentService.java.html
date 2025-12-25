@@ -22,7 +22,7 @@ import java.util.Optional;
 
 @Service
 @RequiredArgsConstructor
-<span class="fc" id="L25">@Slf4j</span>
+<span class="nc" id="L25">@Slf4j</span>
 @Transactional(readOnly = true)
 public class AssignmentService {
 
@@ -35,196 +35,196 @@ public class AssignmentService {
     @Scheduled(fixedDelay = 3000) // Cada 3 segundos
     @Transactional
     public void processTicketAssignments() {
-<span class="fc" id="L38">        List&lt;Advisor&gt; availableAdvisors = advisorRepository.findByStatus(AdvisorStatus.AVAILABLE);</span>
+<span class="nc" id="L38">        List&lt;Advisor&gt; availableAdvisors = advisorRepository.findByStatus(AdvisorStatus.AVAILABLE);</span>
         
-<span class="fc bfc" id="L40" title="All 2 branches covered.">        if (availableAdvisors.isEmpty()) {</span>
-<span class="fc" id="L41">            return;</span>
+<span class="nc bnc" id="L40" title="All 2 branches missed.">        if (availableAdvisors.isEmpty()) {</span>
+<span class="nc" id="L41">            return;</span>
         }
 
         // 1. Procesar tickets críticos primero (RN-016)
-<span class="fc" id="L45">        processCriticalTickets(availableAdvisors);</span>
+<span class="nc" id="L45">        processCriticalTickets(availableAdvisors);</span>
         
         // 2. Procesar tickets normales por prioridad de cola (RN-002)
-<span class="fc" id="L48">        processNormalTickets(availableAdvisors);</span>
-<span class="fc" id="L49">    }</span>
+<span class="nc" id="L48">        processNormalTickets(availableAdvisors);</span>
+<span class="nc" id="L49">    }</span>
 
     private void processCriticalTickets(List&lt;Advisor&gt; availableAdvisors) {
-<span class="fc" id="L52">        LocalDateTime now = LocalDateTime.now();</span>
+<span class="nc" id="L52">        LocalDateTime now = LocalDateTime.now();</span>
         
         // Calcular límites de tiempo por cola
-<span class="fc" id="L55">        LocalDateTime cajaLimit = now.minusMinutes(QueueType.CAJA.getMaxWaitTimeMinutes());</span>
-<span class="fc" id="L56">        LocalDateTime personalLimit = now.minusMinutes(QueueType.PERSONAL_BANKER.getMaxWaitTimeMinutes());</span>
-<span class="fc" id="L57">        LocalDateTime empresasLimit = now.minusMinutes(QueueType.EMPRESAS.getMaxWaitTimeMinutes());</span>
-<span class="fc" id="L58">        LocalDateTime gerenciaLimit = now.minusMinutes(QueueType.GERENCIA.getMaxWaitTimeMinutes());</span>
+<span class="nc" id="L55">        LocalDateTime cajaLimit = now.minusMinutes(QueueType.CAJA.getMaxWaitTimeMinutes());</span>
+<span class="nc" id="L56">        LocalDateTime personalLimit = now.minusMinutes(QueueType.PERSONAL_BANKER.getMaxWaitTimeMinutes());</span>
+<span class="nc" id="L57">        LocalDateTime empresasLimit = now.minusMinutes(QueueType.EMPRESAS.getMaxWaitTimeMinutes());</span>
+<span class="nc" id="L58">        LocalDateTime gerenciaLimit = now.minusMinutes(QueueType.GERENCIA.getMaxWaitTimeMinutes());</span>
         
-<span class="fc" id="L60">        List&lt;Ticket&gt; criticalTickets = queueStatsRepository.findCriticalTicketsByTimeLimit(</span>
-            cajaLimit, personalLimit, empresasLimit, gerenciaLimit
+<span class="nc" id="L60">        List&lt;Ticket&gt; criticalTickets = queueStatsRepository.findCriticalTicketsByTimeLimit(</span>
+<span class="nc" id="L61">            cajaLimit, personalLimit, empresasLimit, gerenciaLimit</span>
         );
 
-<span class="fc bfc" id="L64" title="All 2 branches covered.">        for (Ticket ticket : criticalTickets) {</span>
-<span class="fc" id="L65">            Optional&lt;Advisor&gt; advisor = findBestAdvisorForTicket(ticket, availableAdvisors);</span>
-<span class="pc bpc" id="L66" title="1 of 2 branches missed.">            if (advisor.isPresent()) {</span>
-<span class="fc" id="L67">                assignTicketToAdvisor(ticket, advisor.get());</span>
-<span class="fc" id="L68">                auditService.logTicketAssigned(ticket, advisor.get());</span>
-<span class="fc" id="L69">                log.warn(&quot;CRITICAL ticket {} assigned to {} (waited {} minutes)&quot;, </span>
-<span class="fc" id="L70">                    ticket.getNumero(), advisor.get().getName(),</span>
-<span class="fc" id="L71">                    java.time.Duration.between(ticket.getCreatedAt(), now).toMinutes());</span>
+<span class="nc bnc" id="L64" title="All 2 branches missed.">        for (Ticket ticket : criticalTickets) {</span>
+<span class="nc" id="L65">            Optional&lt;Advisor&gt; advisor = findBestAdvisorForTicket(ticket, availableAdvisors);</span>
+<span class="nc bnc" id="L66" title="All 2 branches missed.">            if (advisor.isPresent()) {</span>
+<span class="nc" id="L67">                assignTicketToAdvisor(ticket, advisor.get());</span>
+<span class="nc" id="L68">                auditService.logTicketAssigned(ticket, advisor.get());</span>
+<span class="nc" id="L69">                log.warn(&quot;CRITICAL ticket {} assigned to {} (waited {} minutes)&quot;, </span>
+<span class="nc" id="L70">                    ticket.getNumero(), advisor.get().getName(),</span>
+<span class="nc" id="L71">                    java.time.Duration.between(ticket.getCreatedAt(), now).toMinutes());</span>
             }
-<span class="fc" id="L73">        }</span>
-<span class="fc" id="L74">    }</span>
+        }
+<span class="nc" id="L74">    }</span>
 
     private void processNormalTickets(List&lt;Advisor&gt; availableAdvisors) {
         // RN-002: Procesar por prioridad de cola (GERENCIA &gt; EMPRESAS &gt; PERSONAL_BANKER &gt; CAJA)
-<span class="fc" id="L78">        QueueType[] queuesByPriority = {</span>
-            QueueType.GERENCIA, 
-            QueueType.EMPRESAS, 
-            QueueType.PERSONAL_BANKER, 
-            QueueType.CAJA
+<span class="nc" id="L78">        QueueType[] queuesByPriority = {</span>
+<span class="nc" id="L79">            QueueType.GERENCIA, </span>
+<span class="nc" id="L80">            QueueType.EMPRESAS, </span>
+<span class="nc" id="L81">            QueueType.PERSONAL_BANKER, </span>
+<span class="nc" id="L82">            QueueType.CAJA</span>
         };
 
-<span class="fc bfc" id="L85" title="All 2 branches covered.">        for (QueueType queueType : queuesByPriority) {</span>
-<span class="fc" id="L86">            List&lt;Ticket&gt; waitingTickets = ticketRepository.findWaitingTicketsByQueue(queueType);</span>
+<span class="nc bnc" id="L85" title="All 2 branches missed.">        for (QueueType queueType : queuesByPriority) {</span>
+<span class="nc" id="L86">            List&lt;Ticket&gt; waitingTickets = ticketRepository.findWaitingTicketsByQueue(queueType);</span>
             
-<span class="fc bfc" id="L88" title="All 2 branches covered.">            for (Ticket ticket : waitingTickets) {</span>
-<span class="fc" id="L89">                List&lt;Advisor&gt; currentlyAvailable = advisorRepository.findByStatus(AdvisorStatus.AVAILABLE);</span>
-<span class="pc bpc" id="L90" title="1 of 2 branches missed.">                if (currentlyAvailable.isEmpty()) {</span>
+<span class="nc bnc" id="L88" title="All 2 branches missed.">            for (Ticket ticket : waitingTickets) {</span>
+<span class="nc" id="L89">                List&lt;Advisor&gt; currentlyAvailable = advisorRepository.findByStatus(AdvisorStatus.AVAILABLE);</span>
+<span class="nc bnc" id="L90" title="All 2 branches missed.">                if (currentlyAvailable.isEmpty()) {</span>
 <span class="nc" id="L91">                    return; // No hay más asesores disponibles</span>
                 }
                 
-<span class="fc" id="L94">                Optional&lt;Advisor&gt; advisor = findBestAdvisorForTicket(ticket, currentlyAvailable);</span>
-<span class="fc bfc" id="L95" title="All 2 branches covered.">                if (advisor.isPresent()) {</span>
-<span class="fc" id="L96">                    assignTicketToAdvisor(ticket, advisor.get());</span>
-<span class="fc" id="L97">                    auditService.logTicketAssigned(ticket, advisor.get());</span>
-<span class="fc" id="L98">                    log.info(&quot;Ticket {} assigned to {} (queue: {})&quot;, </span>
-<span class="fc" id="L99">                        ticket.getNumero(), advisor.get().getName(), queueType);</span>
+<span class="nc" id="L94">                Optional&lt;Advisor&gt; advisor = findBestAdvisorForTicket(ticket, currentlyAvailable);</span>
+<span class="nc bnc" id="L95" title="All 2 branches missed.">                if (advisor.isPresent()) {</span>
+<span class="nc" id="L96">                    assignTicketToAdvisor(ticket, advisor.get());</span>
+<span class="nc" id="L97">                    auditService.logTicketAssigned(ticket, advisor.get());</span>
+<span class="nc" id="L98">                    log.info(&quot;Ticket {} assigned to {} (queue: {})&quot;, </span>
+<span class="nc" id="L99">                        ticket.getNumero(), advisor.get().getName(), queueType);</span>
                 }
-<span class="fc" id="L101">            }</span>
+            }
         }
-<span class="fc" id="L103">    }</span>
+<span class="nc" id="L103">    }</span>
 
     private Optional&lt;Advisor&gt; findBestAdvisorForTicket(Ticket ticket, List&lt;Advisor&gt; availableAdvisors) {
         // Filtrar asesores que pueden atender este tipo de cola
-<span class="fc" id="L107">        List&lt;Advisor&gt; eligibleAdvisors = availableAdvisors.stream()</span>
-<span class="pc bpc" id="L108" title="2 of 4 branches missed.">            .filter(advisor -&gt; advisor.getQueueTypes() != null &amp;&amp; advisor.getQueueTypes().contains(ticket.getQueueType()))</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">            .filter(advisor -&gt; advisor.getStatus() == AdvisorStatus.AVAILABLE)</span>
-<span class="fc" id="L110">            .toList();</span>
+<span class="nc" id="L107">        List&lt;Advisor&gt; eligibleAdvisors = availableAdvisors.stream()</span>
+<span class="nc bnc" id="L108" title="All 4 branches missed.">            .filter(advisor -&gt; advisor.getQueueTypes() != null &amp;&amp; advisor.getQueueTypes().contains(ticket.getQueueType()))</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">            .filter(advisor -&gt; advisor.getStatus() == AdvisorStatus.AVAILABLE)</span>
+<span class="nc" id="L110">            .toList();</span>
 
-<span class="fc bfc" id="L112" title="All 2 branches covered.">        if (eligibleAdvisors.isEmpty()) {</span>
-<span class="fc" id="L113">            return Optional.empty();</span>
+<span class="nc bnc" id="L112" title="All 2 branches missed.">        if (eligibleAdvisors.isEmpty()) {</span>
+<span class="nc" id="L113">            return Optional.empty();</span>
         }
 
         // RN-004: Seleccionar asesor con menor carga de trabajo
-<span class="fc" id="L117">        return eligibleAdvisors.stream()</span>
-<span class="fc" id="L118">            .min(Comparator</span>
-<span class="fc" id="L119">                .comparingInt(Advisor::getWorkloadMinutes)</span>
-<span class="pc" id="L120">                .thenComparing(advisor -&gt; advisor.getLastAssignedAt(), </span>
-<span class="fc" id="L121">                    Comparator.nullsFirst(Comparator.naturalOrder()))</span>
+<span class="nc" id="L117">        return eligibleAdvisors.stream()</span>
+<span class="nc" id="L118">            .min(Comparator</span>
+<span class="nc" id="L119">                .comparingInt(Advisor::getWorkloadMinutes)</span>
+<span class="nc" id="L120">                .thenComparing(advisor -&gt; advisor.getLastAssignedAt(), </span>
+<span class="nc" id="L121">                    Comparator.nullsFirst(Comparator.naturalOrder()))</span>
             );
     }
 
     @Transactional
     public void assignTicketToAdvisor(Ticket ticket, Advisor advisor) {
         // Actualizar ticket
-<span class="fc" id="L128">        ticket.setStatus(TicketStatus.ATENDIENDO);</span>
-<span class="fc" id="L129">        ticket.setAssignedAdvisor(advisor);</span>
-<span class="fc" id="L130">        ticket.setAssignedModuleNumber(advisor.getModuleNumber());</span>
-<span class="fc" id="L131">        ticket.setAssignedAt(LocalDateTime.now());</span>
-<span class="fc" id="L132">        ticket.setPositionInQueue(0);</span>
-<span class="fc" id="L133">        ticket.setEstimatedWaitMinutes(0);</span>
+<span class="nc" id="L128">        ticket.setStatus(TicketStatus.ATENDIENDO);</span>
+<span class="nc" id="L129">        ticket.setAssignedAdvisor(advisor);</span>
+<span class="nc" id="L130">        ticket.setAssignedModuleNumber(advisor.getModuleNumber());</span>
+<span class="nc" id="L131">        ticket.setAssignedAt(LocalDateTime.now());</span>
+<span class="nc" id="L132">        ticket.setPositionInQueue(0);</span>
+<span class="nc" id="L133">        ticket.setEstimatedWaitMinutes(0);</span>
 
         // Actualizar asesor
-<span class="fc" id="L136">        advisor.setStatus(AdvisorStatus.BUSY);</span>
-<span class="fc" id="L137">        advisor.setAssignedTicketsCount(advisor.getAssignedTicketsCount() + 1);</span>
-<span class="fc" id="L138">        advisor.setWorkloadMinutes(advisor.getWorkloadMinutes() + ticket.getQueueType().getAverageTimeMinutes());</span>
-<span class="fc" id="L139">        advisor.setLastAssignedAt(LocalDateTime.now());</span>
+<span class="nc" id="L136">        advisor.setStatus(AdvisorStatus.BUSY);</span>
+<span class="nc" id="L137">        advisor.setAssignedTicketsCount(advisor.getAssignedTicketsCount() + 1);</span>
+<span class="nc" id="L138">        advisor.setWorkloadMinutes(advisor.getWorkloadMinutes() + ticket.getQueueType().getAverageTimeMinutes());</span>
+<span class="nc" id="L139">        advisor.setLastAssignedAt(LocalDateTime.now());</span>
 
         // Guardar cambios
-<span class="fc" id="L142">        ticketRepository.save(ticket);</span>
-<span class="fc" id="L143">        advisorRepository.save(advisor);</span>
+<span class="nc" id="L142">        ticketRepository.save(ticket);</span>
+<span class="nc" id="L143">        advisorRepository.save(advisor);</span>
 
         // Programar mensaje &quot;es tu turno&quot;
-<span class="fc" id="L146">        messageService.scheduleEsTuTurnoMessage(ticket);</span>
+<span class="nc" id="L146">        messageService.scheduleEsTuTurnoMessage(ticket);</span>
 
         // Actualizar posiciones de tickets restantes en la cola
-<span class="fc" id="L149">        updateQueuePositions(ticket.getQueueType());</span>
+<span class="nc" id="L149">        updateQueuePositions(ticket.getQueueType());</span>
 
-<span class="fc" id="L151">        log.info(&quot;Assignment completed: {} → {} (module {})&quot;, </span>
-<span class="fc" id="L152">            ticket.getNumero(), advisor.getName(), advisor.getModuleNumber());</span>
-<span class="fc" id="L153">    }</span>
+<span class="nc" id="L151">        log.info(&quot;Assignment completed: {} → {} (module {})&quot;, </span>
+<span class="nc" id="L152">            ticket.getNumero(), advisor.getName(), advisor.getModuleNumber());</span>
+<span class="nc" id="L153">    }</span>
 
     @Transactional
     public void completeTicket(Long ticketId) {
-<span class="fc" id="L157">        Ticket ticket = ticketRepository.findById(ticketId)</span>
-<span class="fc" id="L158">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Ticket not found: &quot; + ticketId));</span>
+<span class="nc" id="L157">        Ticket ticket = ticketRepository.findById(ticketId)</span>
+<span class="nc" id="L158">            .orElseThrow(() -&gt; new IllegalArgumentException(&quot;Ticket not found: &quot; + ticketId));</span>
 
-<span class="fc bfc" id="L160" title="All 2 branches covered.">        if (ticket.getStatus() != TicketStatus.ATENDIENDO) {</span>
-<span class="fc" id="L161">            throw new IllegalStateException(&quot;Ticket is not being served: &quot; + ticket.getNumero());</span>
+<span class="nc bnc" id="L160" title="All 2 branches missed.">        if (ticket.getStatus() != TicketStatus.ATENDIENDO) {</span>
+<span class="nc" id="L161">            throw new IllegalStateException(&quot;Ticket is not being served: &quot; + ticket.getNumero());</span>
         }
 
-<span class="fc" id="L164">        Advisor advisor = ticket.getAssignedAdvisor();</span>
-<span class="fc" id="L165">        LocalDateTime now = LocalDateTime.now();</span>
+<span class="nc" id="L164">        Advisor advisor = ticket.getAssignedAdvisor();</span>
+<span class="nc" id="L165">        LocalDateTime now = LocalDateTime.now();</span>
 
         // Calcular tiempo real de atención
-<span class="pc bpc" id="L168" title="1 of 2 branches missed.">        if (ticket.getAssignedAt() != null) {</span>
-<span class="fc" id="L169">            long actualMinutes = java.time.Duration.between(ticket.getAssignedAt(), now).toMinutes();</span>
-<span class="fc" id="L170">            ticket.setActualServiceTimeMinutes((int) actualMinutes);</span>
+<span class="nc bnc" id="L168" title="All 2 branches missed.">        if (ticket.getAssignedAt() != null) {</span>
+<span class="nc" id="L169">            long actualMinutes = java.time.Duration.between(ticket.getAssignedAt(), now).toMinutes();</span>
+<span class="nc" id="L170">            ticket.setActualServiceTimeMinutes((int) actualMinutes);</span>
         }
 
         // Actualizar ticket
-<span class="fc" id="L174">        ticket.setStatus(TicketStatus.COMPLETADO);</span>
-<span class="fc" id="L175">        ticket.setCompletedAt(now);</span>
+<span class="nc" id="L174">        ticket.setStatus(TicketStatus.COMPLETADO);</span>
+<span class="nc" id="L175">        ticket.setCompletedAt(now);</span>
 
         // Liberar asesor
-<span class="fc" id="L178">        advisor.setStatus(AdvisorStatus.AVAILABLE);</span>
-<span class="fc" id="L179">        advisor.setAssignedTicketsCount(Math.max(0, advisor.getAssignedTicketsCount() - 1));</span>
-<span class="fc" id="L180">        advisor.setWorkloadMinutes(Math.max(0, </span>
-<span class="fc" id="L181">            advisor.getWorkloadMinutes() - ticket.getQueueType().getAverageTimeMinutes()));</span>
-<span class="fc" id="L182">        advisor.setTotalTicketsServedToday(advisor.getTotalTicketsServedToday() + 1);</span>
+<span class="nc" id="L178">        advisor.setStatus(AdvisorStatus.AVAILABLE);</span>
+<span class="nc" id="L179">        advisor.setAssignedTicketsCount(Math.max(0, advisor.getAssignedTicketsCount() - 1));</span>
+<span class="nc" id="L180">        advisor.setWorkloadMinutes(Math.max(0, </span>
+<span class="nc" id="L181">            advisor.getWorkloadMinutes() - ticket.getQueueType().getAverageTimeMinutes()));</span>
+<span class="nc" id="L182">        advisor.setTotalTicketsServedToday(advisor.getTotalTicketsServedToday() + 1);</span>
 
         // Actualizar promedio de tiempo de servicio del asesor
-<span class="fc" id="L185">        updateAdvisorAverageServiceTime(advisor, ticket.getActualServiceTimeMinutes());</span>
+<span class="nc" id="L185">        updateAdvisorAverageServiceTime(advisor, ticket.getActualServiceTimeMinutes());</span>
 
         // Guardar cambios
-<span class="fc" id="L188">        ticketRepository.save(ticket);</span>
-<span class="fc" id="L189">        advisorRepository.save(advisor);</span>
+<span class="nc" id="L188">        ticketRepository.save(ticket);</span>
+<span class="nc" id="L189">        advisorRepository.save(advisor);</span>
 
-<span class="fc" id="L191">        log.info(&quot;Ticket {} completed by {} in {} minutes&quot;, </span>
-<span class="fc" id="L192">            ticket.getNumero(), advisor.getName(), ticket.getActualServiceTimeMinutes());</span>
-<span class="fc" id="L193">    }</span>
+<span class="nc" id="L191">        log.info(&quot;Ticket {} completed by {} in {} minutes&quot;, </span>
+<span class="nc" id="L192">            ticket.getNumero(), advisor.getName(), ticket.getActualServiceTimeMinutes());</span>
+<span class="nc" id="L193">    }</span>
 
     private void updateQueuePositions(QueueType queueType) {
-<span class="fc" id="L196">        List&lt;Ticket&gt; waitingTickets = ticketRepository.findWaitingTicketsByQueue(queueType);</span>
+<span class="nc" id="L196">        List&lt;Ticket&gt; waitingTickets = ticketRepository.findWaitingTicketsByQueue(queueType);</span>
         
-<span class="fc bfc" id="L198" title="All 2 branches covered.">        for (int i = 0; i &lt; waitingTickets.size(); i++) {</span>
-<span class="fc" id="L199">            Ticket ticket = waitingTickets.get(i);</span>
-<span class="fc" id="L200">            int newPosition = i + 1;</span>
+<span class="nc bnc" id="L198" title="All 2 branches missed.">        for (int i = 0; i &lt; waitingTickets.size(); i++) {</span>
+<span class="nc" id="L199">            Ticket ticket = waitingTickets.get(i);</span>
+<span class="nc" id="L200">            int newPosition = i + 1;</span>
             
             // Actualizar posición y tiempo estimado
-<span class="fc" id="L203">            ticket.setPositionInQueue(newPosition);</span>
-<span class="fc" id="L204">            ticket.setEstimatedWaitMinutes(newPosition * queueType.getAverageTimeMinutes());</span>
+<span class="nc" id="L203">            ticket.setPositionInQueue(newPosition);</span>
+<span class="nc" id="L204">            ticket.setEstimatedWaitMinutes(newPosition * queueType.getAverageTimeMinutes());</span>
             
             // RN-012: Enviar mensaje de pre-aviso si posición &lt;= 3
-<span class="pc bpc" id="L207" title="1 of 4 branches missed.">            if (newPosition &lt;= 3 &amp;&amp; ticket.getStatus() == TicketStatus.EN_ESPERA) {</span>
-<span class="fc" id="L208">                ticket.setStatus(TicketStatus.PROXIMO);</span>
-<span class="fc" id="L209">                messageService.scheduleProximoTurnoMessage(ticket);</span>
+<span class="nc bnc" id="L207" title="All 4 branches missed.">            if (newPosition &lt;= 3 &amp;&amp; ticket.getStatus() == TicketStatus.EN_ESPERA) {</span>
+<span class="nc" id="L208">                ticket.setStatus(TicketStatus.PROXIMO);</span>
+<span class="nc" id="L209">                messageService.scheduleProximoTurnoMessage(ticket);</span>
             }
         }
         
-<span class="fc" id="L213">        ticketRepository.saveAll(waitingTickets);</span>
-<span class="fc" id="L214">    }</span>
+<span class="nc" id="L213">        ticketRepository.saveAll(waitingTickets);</span>
+<span class="nc" id="L214">    }</span>
 
     private void updateAdvisorAverageServiceTime(Advisor advisor, Integer actualServiceTime) {
-<span class="pc bpc" id="L217" title="1 of 2 branches missed.">        if (actualServiceTime == null) return;</span>
+<span class="nc bnc" id="L217" title="All 2 branches missed.">        if (actualServiceTime == null) return;</span>
         
         // Promedio móvil simple
-<span class="fc" id="L220">        int totalServed = advisor.getTotalTicketsServedToday();</span>
-<span class="pc bpc" id="L221" title="1 of 2 branches missed.">        if (totalServed == 1) {</span>
+<span class="nc" id="L220">        int totalServed = advisor.getTotalTicketsServedToday();</span>
+<span class="nc bnc" id="L221" title="All 2 branches missed.">        if (totalServed == 1) {</span>
 <span class="nc" id="L222">            advisor.setAverageServiceTimeMinutes(java.math.BigDecimal.valueOf(actualServiceTime));</span>
-        } else {
-<span class="fc" id="L224">            double currentAvg = advisor.getAverageServiceTimeMinutes().doubleValue();</span>
-<span class="fc" id="L225">            double newAvg = ((currentAvg * (totalServed - 1)) + actualServiceTime) / totalServed;</span>
-<span class="fc" id="L226">            advisor.setAverageServiceTimeMinutes(java.math.BigDecimal.valueOf(newAvg));</span>
+<span class="nc" id="L223">        } else {</span>
+<span class="nc" id="L224">            double currentAvg = advisor.getAverageServiceTimeMinutes().doubleValue();</span>
+<span class="nc" id="L225">            double newAvg = ((currentAvg * (totalServed - 1)) + actualServiceTime) / totalServed;</span>
+<span class="nc" id="L226">            advisor.setAverageServiceTimeMinutes(java.math.BigDecimal.valueOf(newAvg));</span>
         }
-<span class="fc" id="L228">    }</span>
+<span class="nc" id="L228">    }</span>
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

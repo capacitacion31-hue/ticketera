@@ -19,7 +19,7 @@ import java.util.Map;
 
 @Service
 @RequiredArgsConstructor
-<span class="fc" id="L22">@Slf4j</span>
+<span class="nc" id="L22">@Slf4j</span>
 @Transactional(readOnly = true)
 public class QueueService {
 
@@ -27,92 +27,92 @@ public class QueueService {
     private final QueueStatsRepository queueStatsRepository;
 
     public List&lt;QueueSummaryResponse&gt; getAllQueuesSummary() {
-<span class="fc" id="L30">        return Arrays.stream(QueueType.values())</span>
-<span class="fc" id="L31">            .map(this::getQueueSummary)</span>
-<span class="fc" id="L32">            .toList();</span>
+<span class="nc" id="L30">        return Arrays.stream(QueueType.values())</span>
+<span class="nc" id="L31">            .map(this::getQueueSummary)</span>
+<span class="nc" id="L32">            .toList();</span>
     }
 
     public QueueSummaryResponse getQueueSummary(QueueType queueType) {
-<span class="fc" id="L36">        long waiting = ticketRepository.countByQueueTypeAndStatus(queueType, TicketStatus.EN_ESPERA);</span>
-<span class="fc" id="L37">        long serving = ticketRepository.countByQueueTypeAndStatus(queueType, TicketStatus.ATENDIENDO);</span>
-<span class="fc" id="L38">        long completedToday = queueStatsRepository.countTodayByQueueAndStatus(queueType, TicketStatus.COMPLETADO);</span>
+<span class="nc" id="L36">        long waiting = ticketRepository.countByQueueTypeAndStatus(queueType, TicketStatus.EN_ESPERA);</span>
+<span class="nc" id="L37">        long serving = ticketRepository.countByQueueTypeAndStatus(queueType, TicketStatus.ATENDIENDO);</span>
+<span class="nc" id="L38">        long completedToday = queueStatsRepository.countTodayByQueueAndStatus(queueType, TicketStatus.COMPLETADO);</span>
         
-<span class="fc" id="L40">        Double avgWaitTime = queueStatsRepository.getAverageWaitTimeToday(queueType);</span>
-<span class="fc bfc" id="L41" title="All 2 branches covered.">        int avgWaitTimeToday = avgWaitTime != null ? avgWaitTime.intValue() : 0;</span>
+<span class="nc" id="L40">        Double avgWaitTime = queueStatsRepository.getAverageWaitTimeToday(queueType);</span>
+<span class="nc bnc" id="L41" title="All 2 branches missed.">        int avgWaitTimeToday = avgWaitTime != null ? avgWaitTime.intValue() : 0;</span>
         
         // Detectar tickets críticos
-<span class="fc" id="L44">        LocalDateTime timeLimit = LocalDateTime.now().minusMinutes(queueType.getMaxWaitTimeMinutes());</span>
-<span class="fc" id="L45">        List&lt;com.example.ticketero.model.entity.Ticket&gt; criticalTickets = ticketRepository.findCriticalTickets(timeLimit);</span>
-<span class="fc" id="L46">        long criticalCount = criticalTickets.stream()</span>
-<span class="fc bfc" id="L47" title="All 2 branches covered.">            .filter(t -&gt; t.getQueueType() == queueType)</span>
-<span class="fc" id="L48">            .count();</span>
+<span class="nc" id="L44">        LocalDateTime timeLimit = LocalDateTime.now().minusMinutes(queueType.getMaxWaitTimeMinutes());</span>
+<span class="nc" id="L45">        List&lt;com.example.ticketero.model.entity.Ticket&gt; criticalTickets = ticketRepository.findCriticalTickets(timeLimit);</span>
+<span class="nc" id="L46">        long criticalCount = criticalTickets.stream()</span>
+<span class="nc bnc" id="L47" title="All 2 branches missed.">            .filter(t -&gt; t.getQueueType() == queueType)</span>
+<span class="nc" id="L48">            .count();</span>
 
-<span class="fc" id="L50">        String status = determineQueueStatus(waiting, criticalCount);</span>
+<span class="nc" id="L50">        String status = determineQueueStatus(waiting, criticalCount);</span>
 
-<span class="fc" id="L52">        return new QueueSummaryResponse(</span>
-            queueType,
-<span class="fc" id="L54">            queueType.getDisplayName(),</span>
-<span class="fc" id="L55">            queueType.getAverageTimeMinutes(),</span>
-<span class="fc" id="L56">            queueType.getPriority(),</span>
-<span class="fc" id="L57">            queueType.getPrefix(),</span>
-<span class="fc" id="L58">            queueType.getMaxWaitTimeMinutes(),</span>
-<span class="fc" id="L59">            (int) waiting,</span>
-<span class="fc" id="L60">            (int) serving,</span>
-<span class="fc" id="L61">            (int) completedToday,</span>
-<span class="fc" id="L62">            avgWaitTimeToday,</span>
-<span class="fc" id="L63">            (int) criticalCount,</span>
-            status
+<span class="nc" id="L52">        return new QueueSummaryResponse(</span>
+<span class="nc" id="L53">            queueType,</span>
+<span class="nc" id="L54">            queueType.getDisplayName(),</span>
+<span class="nc" id="L55">            queueType.getAverageTimeMinutes(),</span>
+<span class="nc" id="L56">            queueType.getPriority(),</span>
+<span class="nc" id="L57">            queueType.getPrefix(),</span>
+<span class="nc" id="L58">            queueType.getMaxWaitTimeMinutes(),</span>
+<span class="nc" id="L59">            (int) waiting,</span>
+<span class="nc" id="L60">            (int) serving,</span>
+<span class="nc" id="L61">            (int) completedToday,</span>
+<span class="nc" id="L62">            avgWaitTimeToday,</span>
+<span class="nc" id="L63">            (int) criticalCount,</span>
+<span class="nc" id="L64">            status</span>
         );
     }
 
     public QueueStatsResponse getQueueStats(QueueType queueType) {
-<span class="fc" id="L69">        long completed = queueStatsRepository.countTodayByQueueAndStatus(queueType, TicketStatus.COMPLETADO);</span>
-<span class="fc" id="L70">        long waiting = ticketRepository.countByQueueTypeAndStatus(queueType, TicketStatus.EN_ESPERA);</span>
-<span class="fc" id="L71">        long serving = ticketRepository.countByQueueTypeAndStatus(queueType, TicketStatus.ATENDIENDO);</span>
+<span class="nc" id="L69">        long completed = queueStatsRepository.countTodayByQueueAndStatus(queueType, TicketStatus.COMPLETADO);</span>
+<span class="nc" id="L70">        long waiting = ticketRepository.countByQueueTypeAndStatus(queueType, TicketStatus.EN_ESPERA);</span>
+<span class="nc" id="L71">        long serving = ticketRepository.countByQueueTypeAndStatus(queueType, TicketStatus.ATENDIENDO);</span>
         
-<span class="fc" id="L73">        Double avgServiceTime = queueStatsRepository.getAverageServiceTimeToday(queueType);</span>
-<span class="fc" id="L74">        Double avgWaitTime = queueStatsRepository.getAverageWaitTimeToday(queueType);</span>
+<span class="nc" id="L73">        Double avgServiceTime = queueStatsRepository.getAverageServiceTimeToday(queueType);</span>
+<span class="nc" id="L74">        Double avgWaitTime = queueStatsRepository.getAverageWaitTimeToday(queueType);</span>
         
         // Detectar tickets críticos
-<span class="fc" id="L77">        LocalDateTime timeLimit = LocalDateTime.now().minusMinutes(queueType.getMaxWaitTimeMinutes());</span>
-<span class="fc" id="L78">        List&lt;com.example.ticketero.model.entity.Ticket&gt; criticalTickets = ticketRepository.findCriticalTickets(timeLimit);</span>
-<span class="fc" id="L79">        long criticalCount = criticalTickets.stream()</span>
-<span class="pc bnc" id="L80" title="All 2 branches missed.">            .filter(t -&gt; t.getQueueType() == queueType)</span>
-<span class="fc" id="L81">            .count();</span>
+<span class="nc" id="L77">        LocalDateTime timeLimit = LocalDateTime.now().minusMinutes(queueType.getMaxWaitTimeMinutes());</span>
+<span class="nc" id="L78">        List&lt;com.example.ticketero.model.entity.Ticket&gt; criticalTickets = ticketRepository.findCriticalTickets(timeLimit);</span>
+<span class="nc" id="L79">        long criticalCount = criticalTickets.stream()</span>
+<span class="nc bnc" id="L80" title="All 2 branches missed.">            .filter(t -&gt; t.getQueueType() == queueType)</span>
+<span class="nc" id="L81">            .count();</span>
 
         // Calcular eficiencia
-<span class="fc" id="L84">        double efficiency = calculateEfficiency(avgServiceTime, queueType.getAverageTimeMinutes());</span>
+<span class="nc" id="L84">        double efficiency = calculateEfficiency(avgServiceTime, queueType.getAverageTimeMinutes());</span>
 
-<span class="fc" id="L86">        Map&lt;String, String&gt; trends = Map.of(</span>
-            &quot;waitTimeVsPrevious&quot;, &quot;+5%&quot;,  // Placeholder - implementar cálculo real
-            &quot;serviceTimeVsPrevious&quot;, &quot;-2%&quot;
+<span class="nc" id="L86">        Map&lt;String, String&gt; trends = Map.of(</span>
+<span class="nc" id="L87">            &quot;waitTimeVsPrevious&quot;, &quot;+5%&quot;,  // Placeholder - implementar cálculo real</span>
+<span class="nc" id="L88">            &quot;serviceTimeVsPrevious&quot;, &quot;-2%&quot;</span>
         );
 
-<span class="fc" id="L91">        return new QueueStatsResponse(</span>
-            queueType,
-<span class="fc" id="L93">            LocalDate.now(),</span>
-<span class="fc" id="L94">            (int) completed,</span>
-<span class="fc" id="L95">            (int) waiting,</span>
-<span class="fc" id="L96">            (int) serving,</span>
-<span class="fc bfc" id="L97" title="All 2 branches covered.">            avgServiceTime != null ? avgServiceTime.intValue() : queueType.getAverageTimeMinutes(),</span>
-<span class="fc bfc" id="L98" title="All 2 branches covered.">            avgWaitTime != null ? avgWaitTime.intValue() : 0,</span>
-<span class="fc" id="L99">            (int) criticalCount,</span>
-            &quot;10:00-11:00&quot;, // Placeholder - implementar cálculo de hora pico
-<span class="fc" id="L101">            efficiency,</span>
-            trends
+<span class="nc" id="L91">        return new QueueStatsResponse(</span>
+<span class="nc" id="L92">            queueType,</span>
+<span class="nc" id="L93">            LocalDate.now(),</span>
+<span class="nc" id="L94">            (int) completed,</span>
+<span class="nc" id="L95">            (int) waiting,</span>
+<span class="nc" id="L96">            (int) serving,</span>
+<span class="nc bnc" id="L97" title="All 2 branches missed.">            avgServiceTime != null ? avgServiceTime.intValue() : queueType.getAverageTimeMinutes(),</span>
+<span class="nc bnc" id="L98" title="All 2 branches missed.">            avgWaitTime != null ? avgWaitTime.intValue() : 0,</span>
+<span class="nc" id="L99">            (int) criticalCount,</span>
+<span class="nc" id="L100">            &quot;10:00-11:00&quot;, // Placeholder - implementar cálculo de hora pico</span>
+<span class="nc" id="L101">            efficiency,</span>
+<span class="nc" id="L102">            trends</span>
         );
     }
 
     private String determineQueueStatus(long waiting, long critical) {
-<span class="fc bfc" id="L107" title="All 2 branches covered.">        if (critical &gt; 2) return &quot;CRITICAL&quot;;</span>
-<span class="fc bfc" id="L108" title="All 2 branches covered.">        if (waiting &gt; 10) return &quot;HIGH_LOAD&quot;;</span>
-<span class="fc bfc" id="L109" title="All 2 branches covered.">        if (waiting &gt; 5) return &quot;MEDIUM_LOAD&quot;;</span>
-<span class="fc" id="L110">        return &quot;NORMAL&quot;;</span>
+<span class="nc bnc" id="L107" title="All 2 branches missed.">        if (critical &gt; 2) return &quot;CRITICAL&quot;;</span>
+<span class="nc bnc" id="L108" title="All 2 branches missed.">        if (waiting &gt; 10) return &quot;HIGH_LOAD&quot;;</span>
+<span class="nc bnc" id="L109" title="All 2 branches missed.">        if (waiting &gt; 5) return &quot;MEDIUM_LOAD&quot;;</span>
+<span class="nc" id="L110">        return &quot;NORMAL&quot;;</span>
     }
 
     private double calculateEfficiency(Double actualTime, int estimatedTime) {
-<span class="fc bfc" id="L114" title="All 2 branches covered.">        if (actualTime == null) return 85.0; // Default</span>
-<span class="fc" id="L115">        return Math.max(0, 100 - Math.abs(actualTime - estimatedTime) / estimatedTime * 100);</span>
+<span class="nc bnc" id="L114" title="All 2 branches missed.">        if (actualTime == null) return 85.0; // Default</span>
+<span class="nc" id="L115">        return Math.max(0, 100 - Math.abs(actualTime - estimatedTime) / estimatedTime * 100);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

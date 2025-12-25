@@ -4,9 +4,9 @@ public class ActiveTicketExistsException extends RuntimeException {
     private final String activeTicketNumber;
 
     public ActiveTicketExistsException(String nationalId, String activeTicketNumber) {
-<span class="fc" id="L7">        super(&quot;Cliente &quot; + nationalId + &quot; ya tiene un ticket activo: &quot; + activeTicketNumber);</span>
-<span class="fc" id="L8">        this.activeTicketNumber = activeTicketNumber;</span>
-<span class="fc" id="L9">    }</span>
+<span class="nc" id="L7">        super(&quot;Cliente &quot; + nationalId + &quot; ya tiene un ticket activo: &quot; + activeTicketNumber);</span>
+<span class="nc" id="L8">        this.activeTicketNumber = activeTicketNumber;</span>
+<span class="nc" id="L9">    }</span>
 
     public String getActiveTicketNumber() {
 <span class="nc" id="L12">        return activeTicketNumber;</span>

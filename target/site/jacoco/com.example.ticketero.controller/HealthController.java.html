@@ -13,18 +13,18 @@ import java.util.Map;
 @RestController
 @RequestMapping(&quot;/api&quot;)
 @RequiredArgsConstructor
-<span class="fc" id="L16">@Slf4j</span>
+<span class="nc" id="L16">@Slf4j</span>
 public class HealthController {
 
     @GetMapping(&quot;/health&quot;)
     public ResponseEntity&lt;Map&lt;String, Object&gt;&gt; health() {
-<span class="fc" id="L21">        Map&lt;String, Object&gt; health = Map.of(</span>
-            &quot;status&quot;, &quot;UP&quot;,
-<span class="fc" id="L23">            &quot;timestamp&quot;, LocalDateTime.now(),</span>
-            &quot;service&quot;, &quot;ticketero-api&quot;,
-            &quot;version&quot;, &quot;1.0.0&quot;
+<span class="nc" id="L21">        Map&lt;String, Object&gt; health = Map.of(</span>
+<span class="nc" id="L22">            &quot;status&quot;, &quot;UP&quot;,</span>
+<span class="nc" id="L23">            &quot;timestamp&quot;, LocalDateTime.now(),</span>
+<span class="nc" id="L24">            &quot;service&quot;, &quot;ticketero-api&quot;,</span>
+<span class="nc" id="L25">            &quot;version&quot;, &quot;1.0.0&quot;</span>
         );
-<span class="fc" id="L27">        return ResponseEntity.ok(health);</span>
+<span class="nc" id="L27">        return ResponseEntity.ok(health);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

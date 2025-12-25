@@ -1,6 +1,7 @@
 spring:
   datasource:
-    url: jdbc:h2:mem:testdb;DB_CLOSE_DELAY=-1;DB_CLOSE_ON_EXIT=FALSE
+    # Will be overridden by TestContainers
+    url: jdbc:h2:mem:testdb
     username: sa
     password: 
     driver-class-name: org.h2.Driver
@@ -11,14 +12,32 @@ spring:
     show-sql: false
     properties:
       hibernate:
-        dialect: org.hibernate.dialect.H2Dialect
         format_sql: false
   
   flyway:
     enabled: false
+  
+  rabbitmq:
+    # Will be overridden by TestContainers
+    host: localhost
+    port: 5672
+    username: guest
+    password: guest
+  
+  # Disable scheduling in tests
+  task:
+    scheduling:
+      enabled: false
 
+# Telegram configuration (mocked)
+telegram:
+  api-url: http://localhost:8089/bot
+  bot-token: test-token
+  chat-id: 123456789
+
+# Logging
 logging:
   level:
-    org.springframework: WARN
-    org.hibernate: WARN
-    com.example.ticketero: WARN
+    com.example.ticketero: DEBUG
+    org.testcontainers: INFO
+    io.restassured: DEBUG

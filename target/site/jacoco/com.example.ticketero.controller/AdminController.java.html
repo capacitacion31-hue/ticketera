@@ -18,7 +18,7 @@ import java.util.List;
 @RestController
 @RequestMapping(&quot;/api/admin&quot;)
 @RequiredArgsConstructor
-<span class="fc" id="L21">@Slf4j</span>
+<span class="nc" id="L21">@Slf4j</span>
 public class AdminController {
 
     private final DashboardService dashboardService;
@@ -28,44 +28,44 @@ public class AdminController {
 
     @GetMapping(&quot;/dashboard&quot;)
     public ResponseEntity&lt;DashboardResponse&gt; getDashboard() {
-<span class="fc" id="L31">        DashboardResponse response = dashboardService.getDashboard();</span>
-<span class="fc" id="L32">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L31">        DashboardResponse response = dashboardService.getDashboard();</span>
+<span class="nc" id="L32">        return ResponseEntity.ok(response);</span>
     }
 
     @GetMapping(&quot;/summary&quot;)
     public ResponseEntity&lt;PerformanceSummaryResponse&gt; getPerformanceSummary() {
-<span class="fc" id="L37">        PerformanceSummaryResponse response = dashboardService.getPerformanceSummary();</span>
-<span class="fc" id="L38">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L37">        PerformanceSummaryResponse response = dashboardService.getPerformanceSummary();</span>
+<span class="nc" id="L38">        return ResponseEntity.ok(response);</span>
     }
 
     @GetMapping(&quot;/queues&quot;)
     public ResponseEntity&lt;List&lt;QueueSummaryResponse&gt;&gt; getAllQueues() {
-<span class="fc" id="L43">        List&lt;QueueSummaryResponse&gt; response = queueService.getAllQueuesSummary();</span>
-<span class="fc" id="L44">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L43">        List&lt;QueueSummaryResponse&gt; response = queueService.getAllQueuesSummary();</span>
+<span class="nc" id="L44">        return ResponseEntity.ok(response);</span>
     }
 
     @GetMapping(&quot;/queues/{type}&quot;)
     public ResponseEntity&lt;QueueSummaryResponse&gt; getQueueSummary(@PathVariable QueueType type) {
-<span class="fc" id="L49">        QueueSummaryResponse response = queueService.getQueueSummary(type);</span>
-<span class="fc" id="L50">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L49">        QueueSummaryResponse response = queueService.getQueueSummary(type);</span>
+<span class="nc" id="L50">        return ResponseEntity.ok(response);</span>
     }
 
     @GetMapping(&quot;/queues/{type}/stats&quot;)
     public ResponseEntity&lt;QueueStatsResponse&gt; getQueueStats(@PathVariable QueueType type) {
-<span class="fc" id="L55">        QueueStatsResponse response = queueService.getQueueStats(type);</span>
-<span class="fc" id="L56">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L55">        QueueStatsResponse response = queueService.getQueueStats(type);</span>
+<span class="nc" id="L56">        return ResponseEntity.ok(response);</span>
     }
 
     @GetMapping(&quot;/advisors&quot;)
     public ResponseEntity&lt;List&lt;AdvisorResponse&gt;&gt; getAllAdvisors() {
-<span class="fc" id="L61">        List&lt;AdvisorResponse&gt; response = advisorService.getAllAdvisors();</span>
-<span class="fc" id="L62">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L61">        List&lt;AdvisorResponse&gt; response = advisorService.getAllAdvisors();</span>
+<span class="nc" id="L62">        return ResponseEntity.ok(response);</span>
     }
 
     @GetMapping(&quot;/advisors/{id}/stats&quot;)
     public ResponseEntity&lt;AdvisorStatsResponse&gt; getAdvisorStats(@PathVariable Long id) {
-<span class="fc" id="L67">        AdvisorStatsResponse response = advisorService.getAdvisorStats(id);</span>
-<span class="fc" id="L68">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L67">        AdvisorStatsResponse response = advisorService.getAdvisorStats(id);</span>
+<span class="nc" id="L68">        return ResponseEntity.ok(response);</span>
     }
 
     @PutMapping(&quot;/advisors/{id}/status&quot;)
@@ -73,21 +73,21 @@ public class AdminController {
         @PathVariable Long id,
         @Valid @RequestBody AdvisorStatusRequest request
     ) {
-<span class="fc" id="L76">        log.info(&quot;Changing advisor {} status to {}&quot;, id, request.status());</span>
-<span class="fc" id="L77">        AdvisorStatusChangeResponse response = advisorService.changeStatus(id, request);</span>
-<span class="fc" id="L78">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L76">        log.info(&quot;Changing advisor {} status to {}&quot;, id, request.status());</span>
+<span class="nc" id="L77">        AdvisorStatusChangeResponse response = advisorService.changeStatus(id, request);</span>
+<span class="nc" id="L78">        return ResponseEntity.ok(response);</span>
     }
 
     @GetMapping(&quot;/audit/ticket/{ticketId}&quot;)
     public ResponseEntity&lt;AuditEventResponse&gt; getTicketAudit(@PathVariable String ticketId) {
-<span class="fc" id="L83">        AuditEventResponse response = auditService.getAuditTrail(&quot;TICKET&quot;, ticketId);</span>
-<span class="fc" id="L84">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L83">        AuditEventResponse response = auditService.getAuditTrail(&quot;TICKET&quot;, ticketId);</span>
+<span class="nc" id="L84">        return ResponseEntity.ok(response);</span>
     }
 
     @GetMapping(&quot;/audit/advisor/{advisorId}&quot;)
     public ResponseEntity&lt;AuditEventResponse&gt; getAdvisorAudit(@PathVariable String advisorId) {
-<span class="fc" id="L89">        AuditEventResponse response = auditService.getAuditTrail(&quot;ADVISOR&quot;, advisorId);</span>
-<span class="fc" id="L90">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L89">        AuditEventResponse response = auditService.getAuditTrail(&quot;ADVISOR&quot;, advisorId);</span>
+<span class="nc" id="L90">        return ResponseEntity.ok(response);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>

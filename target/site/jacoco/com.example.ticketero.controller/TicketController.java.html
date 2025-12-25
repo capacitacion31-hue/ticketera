@@ -16,35 +16,35 @@ import java.util.UUID;
 @RestController
 @RequestMapping(&quot;/api/tickets&quot;)
 @RequiredArgsConstructor
-<span class="fc" id="L19">@Slf4j</span>
+<span class="nc" id="L19">@Slf4j</span>
 public class TicketController {
 
     private final TicketService ticketService;
 
     @PostMapping
     public ResponseEntity&lt;TicketResponse&gt; create(@Valid @RequestBody TicketRequest request) {
-<span class="fc" id="L26">        log.info(&quot;Creating ticket for customer: {}&quot;, request.nationalId());</span>
-<span class="fc" id="L27">        TicketResponse response = ticketService.create(request);</span>
-<span class="fc" id="L28">        return ResponseEntity.status(201).body(response);</span>
+<span class="nc" id="L26">        log.info(&quot;Creating ticket for customer: {}&quot;, request.nationalId());</span>
+<span class="nc" id="L27">        TicketResponse response = ticketService.create(request);</span>
+<span class="nc" id="L28">        return ResponseEntity.status(201).body(response);</span>
     }
 
     @GetMapping(&quot;/{codigoReferencia}&quot;)
     public ResponseEntity&lt;TicketResponse&gt; getByUuid(@PathVariable UUID codigoReferencia) {
-<span class="fc" id="L33">        return ticketService.findByCodigoReferencia(codigoReferencia)</span>
-<span class="fc" id="L34">            .map(ResponseEntity::ok)</span>
-<span class="fc" id="L35">            .orElse(ResponseEntity.notFound().build());</span>
+<span class="nc" id="L33">        return ticketService.findByCodigoReferencia(codigoReferencia)</span>
+<span class="nc" id="L34">            .map(ResponseEntity::ok)</span>
+<span class="nc" id="L35">            .orElse(ResponseEntity.notFound().build());</span>
     }
 
     @GetMapping(&quot;/{numero}/position&quot;)
     public ResponseEntity&lt;TicketPositionResponse&gt; getPosition(@PathVariable String numero) {
-<span class="fc" id="L40">        TicketPositionResponse response = ticketService.getPosition(numero);</span>
-<span class="fc" id="L41">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L40">        TicketPositionResponse response = ticketService.getPosition(numero);</span>
+<span class="nc" id="L41">        return ResponseEntity.ok(response);</span>
     }
 
     @GetMapping(&quot;/by-rut/{nationalId}&quot;)
     public ResponseEntity&lt;TicketByRutResponse&gt; getByRut(@PathVariable String nationalId) {
-<span class="fc" id="L46">        TicketByRutResponse response = ticketService.findByRut(nationalId);</span>
-<span class="fc" id="L47">        return ResponseEntity.ok(response);</span>
+<span class="nc" id="L46">        TicketByRutResponse response = ticketService.findByRut(nationalId);</span>
+<span class="nc" id="L47">        return ResponseEntity.ok(response);</span>
     }
 }
 </pre><div class="footer"><span class="right">Created with <a href="http://www.jacoco.org/jacoco">JaCoCo</a> 0.8.11.202310140853</span></div></body></html>
