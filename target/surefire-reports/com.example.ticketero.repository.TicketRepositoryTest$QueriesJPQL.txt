@@ -1,4 +1,0 @@
--------------------------------------------------------------------------------
-Test set: com.example.ticketero.repository.TicketRepositoryTest$QueriesJPQL
--------------------------------------------------------------------------------
-Tests run: 3, Failures: 0, Errors: 0, Skipped: 0, Time elapsed: 0.112 s -- in com.example.ticketero.repository.TicketRepositoryTest$QueriesJPQL
